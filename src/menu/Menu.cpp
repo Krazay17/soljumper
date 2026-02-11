@@ -21,7 +21,7 @@ void MenuButton::render()
 void AppMenu::enter(App *app)
 {
     buttons.push_back(new MenuButton(100.0f, 100.0f, 50.0f, 50.0f, [app]()
-                                     { std::cout << "Pressed Button!"; }));
+                                     { std::cout << "Pressed Button!" << std::endl; }));
 }
 
 void AppMenu::update(double dt)

@@ -19,6 +19,7 @@ void App::run()
         double frameTime = elapsed.count();
         lastTime = currentTime;
         accumulator += frameTime;
+        // std::cout << frameTime << std::endl;
 
         SDL_Event event;
         while (SDL_PollEvent(&event))
@@ -34,12 +35,11 @@ void App::run()
             currentState->update(App::dt);
             accumulator -= App::dt;
         }
+        Input::postUpdate();
         double alpha = accumulator / App::dt;
         Gfx::clear();
         currentState->render(alpha);
         Gfx::render();
-
-        Input::postUpdate();
     }
     delete currentState;
     Gfx::shutdown();

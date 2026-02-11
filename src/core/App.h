@@ -8,7 +8,7 @@
 
 class App {
     private:
-    static constexpr double dt = 1.0 / 60.0;
+    static constexpr double dt = 1.0 / 240.0;
     bool running = true;
     public:
     void run();

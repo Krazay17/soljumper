@@ -23,7 +23,6 @@ class AppMenu : public AppState
 {
 private:
     std::vector<MenuButton *> buttons;
-
 public:
     virtual void enter(App *app) override;
     virtual void update(double dt) override;

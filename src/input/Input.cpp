@@ -21,6 +21,7 @@ namespace Input
                 actionMask &= ~CLICK;
         }
     }
+    
     void postUpdate()
     {
         lastActionMask = actionMask;
