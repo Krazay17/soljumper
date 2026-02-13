@@ -6,6 +6,7 @@ class AppState;
 enum AppStates {
     MENU,
     GAME,
+    MINING,
 };
 class App {
     private:

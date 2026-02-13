@@ -1,11 +1,12 @@
 #include "App.h"
 #include <iostream>
-#include "menu/Menu.h"
-#include "game/Game.h"
 #include "input/Input.h"
 #include <SDL3/SDL.h>
 #include "graphics/Graphics.h"
 #include <chrono>
+#include "apps/menu/Menu.h"
+#include "apps/game/Game.h"
+#include "apps/mining/Mining.h"
 
 void App::run()
 {
@@ -57,6 +58,7 @@ void App::fillRegistry()
 {
     AppReg[AppStates::MENU] = new AppMenu(this);
     AppReg[AppStates::GAME] = new AppGame(this);
+    AppReg[AppStates::MINING] = new AppMining(this);
 }
 
 void App::changeAppState(AppStates state)

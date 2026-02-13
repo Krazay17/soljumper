@@ -34,6 +34,7 @@ inline double get_bitcoin_price()
     if(curl)
     {
         // 1. Updated URL with parameters
+        curl_easy_setopt(curl, CURLOPT_CAINFO, "assets/ca-bundle.crt");
         curl_easy_setopt(curl, CURLOPT_URL, "https://data-api.coindesk.com/index/cc/v1/latest/tick?market=ccix&instruments=BTC-USD");
         
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);

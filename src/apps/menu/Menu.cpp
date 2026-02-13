@@ -1,19 +1,20 @@
 #include "Menu.h"
+#include "graphics/Graphics.h"
 #include "input/Input.h"
 #include "core/App.h"
 #include <iostream>
 #include <vector>
 #include "logger/Logger.h"
 #include "math/Vec2.h"
+#include "ui/Button.h"
 
 AppMenu::AppMenu(App *app)
 {
-
     buttons.push_back(new Button(100.0f, 100.0f, 50.0f, 50.0f, [app]()
                                  { std::cout << "BUTTON 1" << std::endl; }));
 
     buttons.push_back(new Button(100.0f, 200.0f, 50.0f, 50.0f, [app]()
-                                 { std::cout << "BUTTON 2" << std::endl; }));
+                                 { app->changeAppState(AppStates::MINING); }));
 
     buttons.push_back(new Button(100.0f, 300.0f, 50.0f, 50.0f, [app]()
                                  { app->changeAppState(AppStates::GAME); }));
@@ -35,7 +36,7 @@ void AppMenu::step(double dt)
 
 void AppMenu::tick(double dt, double alpha)
 {
-    Vec2 target(500, 500);
+    Vec2 target(900, 500);
     Vec2 nextPos = buttons[0]->getPos().lerp_fixed(target, 1, dt);
     buttons[0]->setPos(nextPos);
     for (auto &b : buttons)
