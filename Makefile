@@ -1,10 +1,17 @@
-CXX			= g++
-SDL_PATH	= C:/libs/SDL-release-3.2.28
-SDL_LIB_DIR = $(SDL_PATH)/build
-SDL_INC		= -I$(SDL_PATH)/include
+CXX				= g++
+SDL_PATH		= C:/libs/SDL-release-3.2.28
+SDL_LIB_DIR 	= $(SDL_PATH)/build
+SDL_INC			= -I$(SDL_PATH)/include
+
+SDL_TTF_PATH	= C:/libs/SDL_ttf/dist
+SDL_TTF_LIB_DIR = $(SDL_TTF_PATH)/lib
+SDL_TTF_INC		= -I$(SDL_TTF_PATH)/include
 # Static linking requires SDL3 and its Windows dependencies
-LDFLAGS 	= -lmingw32 -L$(SDL_LIB_DIR) -lSDL3 -lsetupapi -lwinmm -lgdi32 -limm32 -lole32 -loleaut32 -lshell32 -lversion -luuid -luser32
-CXXFLAGS	= -O3 -Isrc $(SDL_INC) -static
+LDFLAGS 	= -lmingw32 -L$(SDL_LIB_DIR) -L$(SDL_TTF_LIB_DIR) \
+          -lSDL3_ttf \
+          -lSDL3 -lcurl -lsetupapi -lwinmm -lgdi32 -limm32 -lole32 \
+          -loleaut32 -lshell32 -lversion -luuid -luser32 -lrpcrt4 -lshlwapi
+CXXFLAGS	= -O3 -Isrc $(SDL_INC) $(SDL_TTF_INC) -static -static-libgcc -static-libstdc++
 
 BIN_DIR		= bin
 TARGET		= $(BIN_DIR)/soljumper.exe
