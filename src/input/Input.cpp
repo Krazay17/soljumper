@@ -3,44 +3,45 @@
 
 namespace Input
 {
-    Uint32 actionMask = 0;
-    Uint32 lastActionMask = 0;
+    Uint32 hardwareState;
+    Uint32 state;
+    Uint32 lastState;
+    Uint32 buffer;
     float mouseX = 0;
     float mouseY = 0;
+    bool quitGame = false;
 
-    void update(SDL_Event event)
+    void handleEvent(const SDL_Event &e)
     {
-        if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
+        if (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN && e.button.button == SDL_BUTTON_LEFT)
         {
-            if (event.button.button == SDL_BUTTON_LEFT)
-                actionMask |= CLICK;
-        }
-        if (event.type == SDL_EVENT_MOUSE_BUTTON_UP)
-        {
-            if (event.button.button == SDL_BUTTON_LEFT)
-                actionMask &= ~CLICK;
+            buffer |= CLICK; // Save that a click occurred
         }
     }
-    
-    void postUpdate()
+
+    void update()
     {
-        lastActionMask = actionMask;
-        // 1. Update Mouse Position
-        SDL_GetMouseState(&mouseX, &mouseY);
+        const Uint32 mouseButtons = SDL_GetMouseState(&mouseX, &mouseY);
+        if (mouseButtons & SDL_BUTTON_MASK(SDL_BUTTON_LEFT))
+            hardwareState |= CLICK;
+        else
+            hardwareState &= ~CLICK;
 
-        // 2. Update Continuous Keys
         const bool *keys = SDL_GetKeyboardState(NULL);
-
+        if (keys[SDL_SCANCODE_W])
+            hardwareState |= FWD;
+        else
+            hardwareState &= ~FWD;
         if (keys[SDL_SCANCODE_SPACE])
-            actionMask |= JUMP;
+            hardwareState |= JUMP;
         else
-            actionMask &= ~JUMP;
+            hardwareState &= ~JUMP;
+    }
 
-        if (keys[SDL_SCANCODE_W]){
-            actionMask |= FWD;
-            std::cout << "FWD";
-        }
-        else
-            actionMask &= ~FWD;
+    void preStep()
+    {
+        lastState = state;
+        state = hardwareState | buffer;
+        buffer = 0;
     }
 }

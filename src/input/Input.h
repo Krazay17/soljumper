@@ -5,20 +5,38 @@ enum Actions
 {
     NONE = 0,
     CLICK = 1 << 0,
-    FWD = 1 << 1,
-    JUMP = 1 << 2,
+    LMOUSE = 1 << 1,
+    RMOUSE = 1 << 2,
+    FWD = 1 << 3,
+    JUMP = 1 << 4,
 };
 
 namespace Input
 {
-    extern Uint32 actionMask;
-    extern Uint32 lastActionMask;
+    extern Uint32 hardwareState;
+    extern Uint32 state;
+    extern Uint32 lastState;
+    extern Uint32 buffer;
     extern float mouseX;
     extern float mouseY;
-    inline bool pressed(Actions a) { 
-        return (actionMask & a) && !(lastActionMask & a); 
+    extern bool quitGame;
+
+    inline bool held(Actions a)
+    {
+        return (state & a);
     }
 
-    void update(SDL_Event event);
-    void postUpdate();
+    inline bool pressed(Actions a)
+    {
+        return (state & a) && !(lastState & a);
+    }
+
+    inline bool released(Actions a)
+    {
+        return !(state & a) && (lastState & a);
+    }
+
+    void handleEvent(const SDL_Event &e);
+    void update();
+    void preStep();
 };

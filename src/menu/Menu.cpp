@@ -1,30 +1,26 @@
 #include "Menu.h"
+#include "input/Input.h"
+#include "core/App.h"
+#include <iostream>
+#include <vector>
 
-void MenuButton::update()
+AppMenu::AppMenu(App *app)
 {
-    bool hovering = (Input::mouseX >= rect.x && Input::mouseX <= rect.x + rect.w &&
-                     Input::mouseY >= rect.y && Input::mouseY <= rect.y + rect.h);
+    buttons.push_back(new Button(100.0f, 100.0f, 50.0f, 50.0f, [app]()
+                                     { std::cout << "BUTTON 1" << std::endl; }));
 
-    if (hovering && Input::actionMask & Actions::CLICK)
-    {
-        if (onClick)
-            onClick();
-    }
-}
+    buttons.push_back(new Button(100.0f, 200.0f, 50.0f, 50.0f, [app]()
+                                     { std::cout << "BUTTON 2" << std::endl; }));
 
-void MenuButton::render()
-{
-    SDL_Color red = {255, 0, 0, 255};
-    Gfx::drawRect(rect.x, rect.y, rect.w, rect.h, red);
+    buttons.push_back(new Button(100.0f, 300.0f, 50.0f, 50.0f, [app]()
+                                     { app->changeAppState(AppStates::GAME); }));
 }
 
 void AppMenu::enter(App *app)
 {
-    buttons.push_back(new MenuButton(100.0f, 100.0f, 50.0f, 50.0f, [app]()
-                                     { std::cout << "Pressed Button!" << std::endl; }));
 }
 
-void AppMenu::update(double dt)
+void AppMenu::step(double dt)
 {
     for (auto &b : buttons)
     {
@@ -32,7 +28,7 @@ void AppMenu::update(double dt)
     }
 }
 
-void AppMenu::render(double alpha)
+void AppMenu::tick(double dt, double alpha)
 {
     for (auto &b : buttons)
     {
