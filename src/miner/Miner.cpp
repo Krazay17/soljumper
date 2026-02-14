@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void BitcoinMiner::mine_worker(BitcoinHeader block_to_copy, long long start_nonce, MineResult& result)
+void BitcoinMiner::mine_worker(BitcoinHeader block_to_copy, long long start_nonce, MineResult &result)
 {
     SHA256 sha;
     string h;
@@ -16,7 +16,7 @@ void BitcoinMiner::mine_worker(BitcoinHeader block_to_copy, long long start_nonc
 
     const unsigned char *raw_data = reinterpret_cast<const unsigned char *>(&local_block);
 
-    while (!found)
+    while (!found && !shouldStop)
     {
         h = sha(sha(raw_data, 80));
 
@@ -26,7 +26,7 @@ void BitcoinMiner::mine_worker(BitcoinHeader block_to_copy, long long start_nonc
             std::lock_guard<std::mutex> lock(result_mutex);
             result.hash = h;
             result.nonce = local_block.nonce;
-            result.total_hashes = total_hashes;            
+            result.total_hashes = total_hashes;
             result.found = true;
             return;
         }
@@ -35,9 +35,10 @@ void BitcoinMiner::mine_worker(BitcoinHeader block_to_copy, long long start_nonc
     }
 }
 
-void BitcoinMiner::run(BitcoinHeader data, string target, MineResult& result)
+void BitcoinMiner::run(BitcoinHeader data, string target, MineResult &result)
 {
     found = false;
+    shouldStop = false;
     total_hashes = 0;
     target_string = target;
     workers.clear();
@@ -57,7 +58,7 @@ void BitcoinMiner::run(BitcoinHeader data, string target, MineResult& result)
         workers.push_back(thread(&BitcoinMiner::mine_worker, this, data, offset, std::ref(result)));
     }
 
-    while (!found)
+    while (!found && !shouldStop)
     {
         this_thread::sleep_for(chrono::seconds(1));
 
@@ -75,4 +76,16 @@ void BitcoinMiner::run(BitcoinHeader data, string target, MineResult& result)
         if (t.joinable())
             t.join();
     }
+}
+
+void BitcoinMiner::stop()
+{
+    shouldStop = true;
+
+    for (auto &t : workers)
+    {
+        if (t.joinable())
+            t.join();
+    };
+    workers.clear();
 }

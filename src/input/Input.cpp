@@ -32,10 +32,21 @@ namespace Input
             hardwareState |= FWD;
         else
             hardwareState &= ~FWD;
+            
         if (keys[SDL_SCANCODE_SPACE])
             hardwareState |= JUMP;
         else
             hardwareState &= ~JUMP;
+
+        if (keys[SDL_SCANCODE_A])
+            hardwareState |= LEFT;
+        else
+            hardwareState &= ~LEFT;
+
+        if (keys[SDL_SCANCODE_D])
+            hardwareState |= RIGHT;
+        else
+            hardwareState &= ~RIGHT;
     }
 
     void preStep()

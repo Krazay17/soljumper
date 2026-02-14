@@ -7,6 +7,7 @@
 #include "apps/menu/Menu.h"
 #include "apps/game/Game.h"
 #include "apps/mining/Mining.h"
+#include "math/Utils.h"
 
 void App::run()
 {
@@ -48,9 +49,25 @@ void App::run()
         const double alpha = accumulator / App::dt;
         Gfx::clear();
         currentState->tick(frameTime, alpha);
+        if (showFps)
+        {
+            // Add 'float smoothedFps' as a member variable to your App class
+            // Then inside run():
+            const float currentFps = 1.0f / frameTime;
+            if (std::isfinite(currentFps))
+            {
+                smoothedFps = lerp(smoothedFps, currentFps, 6.0f, (float)frameTime);
+            }
+            char buffer[32];
+            snprintf(buffer, sizeof(buffer), "FPS: %d", static_cast<int>(smoothedFps));
+            Gfx::drawText(buffer, 0, 50, {255, 255, 255, 255});
+        }
         Gfx::render();
     }
-    delete currentState;
+    for (auto [a, b] : AppReg)
+    {
+        delete b;
+    }
     Gfx::shutdown();
 }
 
@@ -63,6 +80,11 @@ void App::fillRegistry()
 
 void App::changeAppState(AppStates state)
 {
+    currentState->exit();
     currentState = AppReg[state];
     currentState->enter(this);
+}
+
+void App::toggleFps()
+{
 }

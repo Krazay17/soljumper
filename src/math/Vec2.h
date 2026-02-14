@@ -23,6 +23,13 @@ public:
         return Vec2(x + other.x, y + other.y);
     }
 
+    inline Vec2 &operator+=(const Vec2 &other)
+    {
+        x += other.x;
+        y += other.y;
+        return *this;
+    }
+
     // Example operation: scalar multiplication
     inline Vec2 operator*(float scalar) const
     {

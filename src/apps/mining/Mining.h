@@ -7,15 +7,18 @@ class Button;
 class AppMining : public AppState
 {
 private:
-    std::vector<Button*> buttons;
-    std::string target;
+    std::vector<Button *> buttons;
     BitcoinHeader genesis;
     BitcoinMiner miner;
-    MineResult result;
 
 public:
+    bool isMining = false;
     AppMining(App *app);
+    virtual ~AppMining() override;
     virtual void enter(App *app) override;
     virtual void step(double dt) override;
     virtual void tick(double dt, double alpha) override;
+    virtual void exit() override;
+    void runMine(int x);
+    void stopMine();
 };

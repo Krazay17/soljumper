@@ -9,6 +9,8 @@ namespace Gfx
     extern SDL_Renderer *renderer;
     extern SDL_Color bgColor;
     extern TTF_Font *mainFont;
+    extern int height;
+    extern int width;
     bool init(const char *title, int w, int h);
     void shutdown();
     void clear();

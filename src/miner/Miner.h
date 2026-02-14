@@ -27,14 +27,15 @@ struct MineResult
 class BitcoinMiner
 {
 private:
+    std::atomic_bool shouldStop{false};
     std::atomic<bool> found{false};
     std::atomic<long long> total_hashes{0};
     std::vector<std::thread> workers;
     std::string target_string;
     std::mutex result_mutex;
-
-    void mine_worker(BitcoinHeader block_to_copy, long long start_nonce, MineResult& result);
+    void mine_worker(BitcoinHeader block_to_copy, long long start_nonce, MineResult &result);
 
 public:
-    void run(BitcoinHeader data, std::string target, MineResult& result);
+    void run(BitcoinHeader data, std::string target, MineResult &result);
+    void stop();
 };

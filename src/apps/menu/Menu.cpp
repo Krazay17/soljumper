@@ -10,14 +10,14 @@
 
 AppMenu::AppMenu(App *app)
 {
-    buttons.push_back(new Button(100.0f, 100.0f, 50.0f, 50.0f, [app]()
-                                 { std::cout << "BUTTON 1" << std::endl; }));
+    buttons.push_back(new Button(100.0f, 100.0f, 100.0f, 50.0f, [app]()
+                                 { std::cout << "BUTTON 1" << std::endl; }, "Test"));
 
-    buttons.push_back(new Button(100.0f, 200.0f, 50.0f, 50.0f, [app]()
-                                 { app->changeAppState(AppStates::MINING); }));
+    buttons.push_back(new Button(100.0f, 200.0f, 100.0f, 50.0f, [app]()
+                                 { app->changeAppState(AppStates::MINING); }, "BitMiner"));
 
-    buttons.push_back(new Button(100.0f, 300.0f, 50.0f, 50.0f, [app]()
-                                 { app->changeAppState(AppStates::GAME); }));
+    buttons.push_back(new Button(100.0f, 300.0f, 100.0f, 50.0f, [app]()
+                                 { app->changeAppState(AppStates::GAME); }, "Game"));
 }
 
 void AppMenu::enter(App *app)
@@ -29,9 +29,7 @@ void AppMenu::enter(App *app)
 void AppMenu::step(double dt)
 {
     for (auto &b : buttons)
-    {
         b->update();
-    }
 }
 
 void AppMenu::tick(double dt, double alpha)
@@ -40,17 +38,11 @@ void AppMenu::tick(double dt, double alpha)
     Vec2 nextPos = buttons[0]->getPos().lerp_fixed(target, 1, dt);
     buttons[0]->setPos(nextPos);
     for (auto &b : buttons)
-    {
         b->render();
-    }
-    double price = Bitcoin::currentPrice.load();
-    if (price <= 0.0)
-    {
-        Gfx::drawText("Fetching BTC Price...", 100.0f, 50.0f);
-    }
-    else
-    {
-        std::string priceText = "BTC: $" + std::to_string(price);
-        Gfx::drawText(priceText.c_str(), 100.0f, 50.0f);
-    }
+}
+
+void AppMenu::exit()
+{
+    for (auto &b : buttons)
+        b->reset();
 }

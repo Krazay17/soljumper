@@ -8,7 +8,10 @@ enum Actions
     LMOUSE = 1 << 1,
     RMOUSE = 1 << 2,
     FWD = 1 << 3,
-    JUMP = 1 << 4,
+    BWD = 1 << 4,
+    LEFT = 1 << 5,
+    RIGHT = 1 << 6,
+    JUMP = 1 << 7,
 };
 
 namespace Input

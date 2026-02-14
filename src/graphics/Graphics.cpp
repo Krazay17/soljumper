@@ -6,9 +6,13 @@ namespace Gfx
     SDL_Renderer *renderer = nullptr;
     SDL_Color bgColor = {0, 0, 0, 255};
     TTF_Font *mainFont = nullptr;
+    int height;
+    int width;
 
     bool init(const char *title, int w, int h)
     {
+        height = h;
+        width = w;
         if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS))
             return false;
 
@@ -23,6 +27,8 @@ namespace Gfx
         renderer = SDL_CreateRenderer(window, NULL);
         if (!renderer)
             return false;
+
+        SDL_SetRenderVSync(renderer, SDL_RENDERER_VSYNC_DISABLED);
 
         mainFont = TTF_OpenFont("assets/fonts/MonaspaceKryptonFrozen-Bold.ttf", 24);
         if (!mainFont)
