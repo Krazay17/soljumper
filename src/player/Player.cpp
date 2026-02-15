@@ -4,13 +4,17 @@
 
 Player::Player()
 {
-    movement = new Movement();
+    movement = new Movement(0, 0, height, width);
 }
 
-void Player::render()
+void Player::render(double dt, double alpha)
 {
     if (movement)
-        Gfx::drawRect(movement->pos.x, movement->pos.y, 50.0f, 50.0f, SDL_Color{255, 0, 0, 255});
+    {
+        pos.x = lerp_linear(pos.x, movement->pos.x, alpha);
+        pos.y = lerp_linear(pos.y, movement->pos.y, alpha);
+    }
+    Gfx::drawRect(pos.x, pos.y, 50.0f, 50.0f, SDL_Color{255, 0, 0, 255});
 }
 
 void Player::update(double dt)

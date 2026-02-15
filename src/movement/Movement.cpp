@@ -6,8 +6,9 @@
 void Movement::move(double dt)
 {
     const float f = grounded ? groundFriction : airFriction;
+    const float a = grounded ? groundAccel : airAccel;
     Velocity.x = friction(dt, Velocity.x, f);
-    Velocity.x = accelerate(dt, Velocity.x, wishdir(), speed, accel);
+    Velocity.x = accelerate(dt, Velocity.x, wishdir(), speed, a);
     if (grounded)
         jump();
 }
@@ -51,6 +52,11 @@ int Movement::wishdir()
     return direction;
 }
 
+Movement::Movement(float posX, float posY, float h, float w)
+    : pos{posX, posY}, height(h), width(w)
+{
+}
+
 void Movement::update(double dt)
 {
     applyGravity(gravity * dt);
@@ -87,7 +93,7 @@ void Movement::applyCollision()
         Velocity.x = 0;
     }
     else
-    touchingLeft = false;
+        touchingLeft = false;
     if (pos.x >= rWall)
     {
         pos.x = rWall;
@@ -95,5 +101,5 @@ void Movement::applyCollision()
         Velocity.x = 0;
     }
     else
-    touchingRight = false;
+        touchingRight = false;
 }

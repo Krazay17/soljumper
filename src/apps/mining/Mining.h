@@ -4,20 +4,26 @@
 #include <vector>
 
 class Button;
+class App;
 class AppMining : public AppState
 {
 private:
     std::vector<Button *> buttons;
     BitcoinHeader genesis;
     BitcoinMiner miner;
-
+    MineResult result;
+    double mineStartTime;
+    bool hasLoggedFind = false;
+    float limiter = 0.0f;
+    std::string mineInfo;
+    App *app;
 public:
     bool isMining = false;
     AppMining(App *app);
-    virtual ~AppMining() override;
+    ~AppMining();
     virtual void enter(App *app) override;
-    virtual void step(double dt) override;
-    virtual void tick(double dt, double alpha) override;
+    virtual void step(double dt, double time) override;
+    virtual void tick(double dt, double time, double alpha) override;
     virtual void exit() override;
     void runMine(int x);
     void stopMine();

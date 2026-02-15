@@ -26,23 +26,23 @@ void AppMenu::enter(App *app)
     buttons[0]->setPos(Vec2(100.0f, 100.0f));
 }
 
-void AppMenu::step(double dt)
+void AppMenu::step(double dt, double time)
 {
-    for (auto &b : buttons)
+    for (auto *b : buttons)
         b->update();
 }
 
-void AppMenu::tick(double dt, double alpha)
+void AppMenu::tick(double dt, double time, double alpha)
 {
     Vec2 target(900, 500);
     Vec2 nextPos = buttons[0]->getPos().lerp_fixed(target, 1, dt);
     buttons[0]->setPos(nextPos);
-    for (auto &b : buttons)
+    for (auto *b : buttons)
         b->render();
 }
 
 void AppMenu::exit()
 {
-    for (auto &b : buttons)
+    for (auto *b : buttons)
         b->reset();
 }

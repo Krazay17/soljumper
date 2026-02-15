@@ -37,5 +37,6 @@ private:
 
 public:
     void run(BitcoinHeader data, std::string target, MineResult &result);
+    long long getTotalHashes() const { return total_hashes.load(); }
     void stop();
 };

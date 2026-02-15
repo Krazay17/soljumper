@@ -4,15 +4,18 @@
 
 class Button;
 class Player;
+class SolWorld;
 class AppGame : public AppState
 {
 private:
     std::vector<Button *> buttons;
     Player *player;
+    SolWorld *world;
+
 public:
     AppGame(App *app);
     virtual void enter(App *app) override;
-    virtual void step(double dt) override;
-    virtual void tick(double dt, double alpha) override;
+    virtual void step(double dt, double time) override;
+    virtual void tick(double dt, double time, double alpha) override;
     virtual void exit();
 };

@@ -63,11 +63,10 @@ target_link_libraries(soljumper PRIVATE
     kernel32
 )
 
-# 7. Includes
+#target_link_options(soljumper PRIVATE -mwindows)
 target_include_directories(soljumper PRIVATE src)
 target_include_directories(soljumper PRIVATE /mingw64/include)
 
-# 8. Assets Copy
 if(WIN32)
     add_custom_command(TARGET soljumper POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory

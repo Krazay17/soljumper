@@ -14,11 +14,12 @@ class Movement
 public:
     float height = 50.0f;
     float width = 50.0f;
-    float speed = 3;
-    float accel = 6;
-    float groundFriction = 2;
-    float airFriction = 1;
-    float gravity = 9.81;
+    float speed = 3.0f;
+    float groundAccel = 14.0f;
+    float groundFriction = 12.0f;
+    float airAccel = 2.0f;
+    float airFriction = 0.1f;
+    float gravity = 9.81f;
     bool grounded = false;
     bool touchingLeft = false;
     bool touchingRight = false;
@@ -29,6 +30,6 @@ public:
     float ceiling = 0;
     float LWall = 0;
     float RWall = 1280;
-
+    Movement(float posX, float posY, float height = 50.0f, float width = 50.0f);
     void update(double dt);
 };

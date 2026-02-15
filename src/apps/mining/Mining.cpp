@@ -6,7 +6,7 @@
 #include "ui/Button.h"
 #include "core/App.h"
 
-AppMining::AppMining(App *app)
+AppMining::AppMining(App *app) : app(app)
 {
     buttons.push_back(new Button(0.0f, 0.0f, 100.0f, 50.0f, [app]()
                                  { app->changeAppState(AppStates::MENU); }, "Menu"));
@@ -23,15 +23,32 @@ AppMining::~AppMining()
     stopMine();
 }
 
-void AppMining::step(double dt)
+void AppMining::step(double dt, double time)
 {
-    for (auto &b : buttons)
+    for (auto *b : buttons)
         b->update(dt);
+    if (result.found && !hasLoggedFind)
+    {
+        stopMine();
+        std::string foundstring = "Found coin!\n" + result.hash + "\nNonce: " + std::to_string(result.nonce);
+        logToFile(foundstring);
+        std::cout << "\n"
+                  << foundstring << std::endl;
+        hasLoggedFind = true;
+    }
+    limiter += (float)dt;
+    if (limiter > 1.0f)
+    {
+        limiter = 0.0f;
+        const float elapsed = app->mstime - mineStartTime;
+        const float hashes = (float)miner.getTotalHashes() / elapsed;
+        mineInfo = "Hashrate: " + std::to_string(hashes) + " KH/s";
+    }
 }
 
-void AppMining::tick(double dt, double alpha)
+void AppMining::tick(double dt, double time, double alpha)
 {
-    for (auto &b : buttons)
+    for (auto *b : buttons)
         b->render();
     double price = Bitcoin::currentPrice.load();
     if (price <= 0.0)
@@ -41,11 +58,15 @@ void AppMining::tick(double dt, double alpha)
         std::string priceText = "BTC: $" + std::to_string(price);
         Gfx::drawText(priceText.c_str(), 0.0f, 100.0f);
     }
+    if (isMining)
+    {
+        Gfx::drawText(mineInfo.c_str(), 200.0f, 0);
+    }
 }
 
 void AppMining::exit()
 {
-    for (auto &b : buttons)
+    for (auto *b : buttons)
         b->reset();
 }
 
@@ -59,21 +80,14 @@ void AppMining::runMine(int x)
 {
     if (isMining)
         return;
+    hasLoggedFind = false;
+    result.found = false;
+    result.hash = "";
     isMining = true;
-    const std::string target = std::string(x, '0');
+    mineStartTime = app->mstime;
     genesis.nonce = 0;
-    std::thread miningThread([this, target]()
-                             {
-                                 MineResult result;
-                                 miner.run(genesis, target, result);
-                                 if (result.found)
-                                 {
-                                     std::string foundstring = "Found coin!\n" + result.hash + "\nNonce: " + std::to_string(result.nonce);
-                                     logToFile(foundstring);
-                                     std::cout << "\n"
-                                               << foundstring << std::endl;
-                                               isMining = false;
-                                 } });
+    std::thread miningThread([this, x]()
+                             { miner.run(genesis, std::string(x, '0'), std::ref(result)); });
     miningThread.detach();
 }
 

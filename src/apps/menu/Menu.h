@@ -11,7 +11,7 @@ private:
 public:
     AppMenu(App *app);
     virtual void enter(App *app) override;
-    virtual void step(double dt) override;
-    virtual void tick(double dt, double alpha) override;
+    virtual void step(double dt, double time) override;
+    virtual void tick(double dt, double time, double alpha) override;
     virtual void exit() override;
 };

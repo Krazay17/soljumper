@@ -19,11 +19,8 @@ namespace Gfx
 
         if (!TTF_Init())
             return false;
-
-        window = SDL_CreateWindow(title, w, h,
-                                  SDL_WINDOW_BORDERLESS |
-                                      SDL_WINDOW_RESIZABLE |
-                                      SDL_WINDOW_HIGH_PIXEL_DENSITY);
+        SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
+        window = SDL_CreateWindow(title, w, h, SDL_WINDOW_BORDERLESS);
         if (!window)
             return false;
 
@@ -95,6 +92,6 @@ namespace Gfx
 
     void drawTexture()
     {
-        SDL_Surface * IMG_LoadWEBP_IO(SDL_IOStream *src);
+        SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream * src);
     }
 }

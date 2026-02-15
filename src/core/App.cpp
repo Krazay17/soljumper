@@ -7,7 +7,19 @@
 #include "apps/menu/Menu.h"
 #include "apps/game/Game.h"
 #include "apps/mining/Mining.h"
+#include "apps/ui/Ui.h"
 #include "math/Utils.h"
+#include <windows.h>
+
+App::App()
+{
+    AppReg[AppStates::MENU] = new AppMenu(this);
+    AppReg[AppStates::GAME] = new AppGame(this);
+    AppReg[AppStates::MINING] = new AppMining(this);
+
+    PersistApps.push_back(new AppUi(this));
+    PersistApps.push_back(new AppGame(this));
+}
 
 void App::run()
 {
@@ -16,17 +28,24 @@ void App::run()
         std::cerr << "Graphics failed to initialize" << SDL_GetError() << std::endl;
         return;
     }
-    fillRegistry();
     currentState = AppReg[AppStates::MENU];
     currentState->enter(this);
 
+    using clock = std::chrono::steady_clock;
     double accumulator = 0;
-    auto lastTime = std::chrono::high_resolution_clock::now();
+    auto startTime = clock::now();
+    auto lastTime = startTime;
     while (running)
     {
-        auto currentTime = std::chrono::high_resolution_clock::now();
+        auto currentTime = clock::now();
+
+        std::chrono::duration<double, std::milli> duration = currentTime - startTime;
+        mstime = duration.count();
+
         std::chrono::duration<double> elapsed = currentTime - lastTime;
-        const double frameTime = elapsed.count();
+        double frameTime = elapsed.count();
+        if (frameTime > 0.25)
+            frameTime = 0.25;
         lastTime = currentTime;
         accumulator += frameTime;
 
@@ -38,30 +57,28 @@ void App::run()
             if (event.type == SDL_EVENT_KEY_DOWN && event.key.scancode == SDL_SCANCODE_ESCAPE)
                 running = false;
             Input::handleEvent(event);
+            if (event.type == SDL_EVENT_WINDOW_RESIZED)
+            {
+            }
         }
         Input::update();
+
         while (accumulator >= App::dt)
         {
             Input::preStep();
-            currentState->step(App::dt);
+            currentState->step(App::dt, mstime);
+            for (auto *a : PersistApps)
+                a->step(dt, mstime);
             accumulator -= App::dt;
         }
-        const double alpha = accumulator / App::dt;
+
         Gfx::clear();
-        currentState->tick(frameTime, alpha);
+        const double alpha = accumulator / App::dt;
+        currentState->tick(frameTime, mstime, alpha);
+        for (auto *a : PersistApps)
+            a->tick(dt, mstime, alpha);
         if (showFps)
-        {
-            // Add 'float smoothedFps' as a member variable to your App class
-            // Then inside run():
-            const float currentFps = 1.0f / frameTime;
-            if (std::isfinite(currentFps))
-            {
-                smoothedFps = lerp(smoothedFps, currentFps, 6.0f, (float)frameTime);
-            }
-            char buffer[32];
-            snprintf(buffer, sizeof(buffer), "FPS: %d", static_cast<int>(smoothedFps));
-            Gfx::drawText(buffer, 0, 50, {255, 255, 255, 255});
-        }
+            printFps(frameTime);
         Gfx::render();
     }
     for (auto [a, b] : AppReg)
@@ -71,18 +88,25 @@ void App::run()
     Gfx::shutdown();
 }
 
-void App::fillRegistry()
-{
-    AppReg[AppStates::MENU] = new AppMenu(this);
-    AppReg[AppStates::GAME] = new AppGame(this);
-    AppReg[AppStates::MINING] = new AppMining(this);
-}
-
 void App::changeAppState(AppStates state)
 {
     currentState->exit();
     currentState = AppReg[state];
     currentState->enter(this);
+}
+
+void App::printFps(double frameTime)
+{
+    // Add 'float smoothedFps' as a member variable to your App class
+    // Then inside run():
+    const float currentFps = (frameTime > 0.0f) ? 1.0f / (float)frameTime : 0.0f;
+    if (std::isfinite(currentFps))
+    {
+        smoothedFps = lerp(smoothedFps, currentFps, 6.0f, (float)frameTime);
+    }
+    char buffer[32];
+    snprintf(buffer, sizeof(buffer), "FPS: %d", static_cast<int>(smoothedFps));
+    Gfx::drawText(buffer, 0, 50, {255, 255, 255, 255});
 }
 
 void App::toggleFps()
