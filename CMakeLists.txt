@@ -12,6 +12,7 @@ add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 set(SDLTTF_VENDORED ON)
 set(SDLTTF_SAMPLES OFF)
 add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
+add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
 
 # 3. Source Files
 file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h")
@@ -26,6 +27,7 @@ target_compile_definitions(soljumper PRIVATE CURL_STATICLIB)
 target_link_libraries(soljumper PRIVATE 
     SDL3::SDL3
     SDL3_ttf::SDL3_ttf
+    SDL3_image::SDL3_image
     
     -Wl,-Bstatic 
     -lcurl 

@@ -7,6 +7,7 @@ namespace Gfx
 {
     extern SDL_Window *window;
     extern SDL_Renderer *renderer;
+    extern SDL_Texture *texture;
     extern SDL_Color bgColor;
     extern TTF_Font *mainFont;
     extern int height;
@@ -17,4 +18,5 @@ namespace Gfx
     void render();
     void drawRect(float x, float y, float w, float h, SDL_Color color);
     void drawText(const char *text, float x, float y, SDL_Color color = {0, 255, 0, 255});
+    void drawTexture();
 };

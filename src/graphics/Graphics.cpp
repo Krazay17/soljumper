@@ -4,6 +4,7 @@ namespace Gfx
 {
     SDL_Window *window = nullptr;
     SDL_Renderer *renderer = nullptr;
+    SDL_Texture *texture = nullptr;
     SDL_Color bgColor = {0, 0, 0, 255};
     TTF_Font *mainFont = nullptr;
     int height;
@@ -19,7 +20,10 @@ namespace Gfx
         if (!TTF_Init())
             return false;
 
-        window = SDL_CreateWindow(title, w, h, 0);
+        window = SDL_CreateWindow(title, w, h,
+                                  SDL_WINDOW_BORDERLESS |
+                                      SDL_WINDOW_RESIZABLE |
+                                      SDL_WINDOW_HIGH_PIXEL_DENSITY);
         if (!window)
             return false;
 
@@ -87,5 +91,10 @@ namespace Gfx
         // CLEANUP: If you don't do this, you'll crash in 30 seconds
         SDL_DestroySurface(surf);
         SDL_DestroyTexture(tex);
+    }
+
+    void drawTexture()
+    {
+        SDL_Surface * IMG_LoadWEBP_IO(SDL_IOStream *src);
     }
 }
