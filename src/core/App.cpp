@@ -9,7 +9,6 @@
 #include "apps/mining/Mining.h"
 #include "apps/ui/Ui.h"
 #include "math/Utils.h"
-#include <windows.h>
 
 App::App()
 {
@@ -18,7 +17,6 @@ App::App()
     AppReg[AppStates::MINING] = new AppMining(this);
 
     PersistApps.push_back(new AppUi(this));
-    PersistApps.push_back(new AppGame(this));
 }
 
 void App::run()
@@ -55,7 +53,7 @@ void App::run()
             if (event.type == SDL_EVENT_QUIT)
                 running = false;
             if (event.type == SDL_EVENT_KEY_DOWN && event.key.scancode == SDL_SCANCODE_ESCAPE)
-                running = false;
+                changeAppState(AppStates::MENU);
             Input::handleEvent(event);
             if (event.type == SDL_EVENT_WINDOW_RESIZED)
             {
@@ -90,6 +88,10 @@ void App::run()
 
 void App::changeAppState(AppStates state)
 {
+    if (AppReg[state] == currentState)
+        return;
+    if (!AppReg[state])
+        return;
     currentState->exit();
     currentState = AppReg[state];
     currentState->enter(this);

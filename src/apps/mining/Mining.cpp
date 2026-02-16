@@ -8,8 +8,6 @@
 
 AppMining::AppMining(App *app) : app(app)
 {
-    buttons.push_back(new Button(0.0f, 0.0f, 100.0f, 50.0f, [app]()
-                                 { app->changeAppState(AppStates::MENU); }, "Menu"));
     buttons.push_back(new Button(200.0f, 200.0f, 100.0f, 50.0f, [this]()
                                  { runMine(2); }, "Mine 2"));
     buttons.push_back(new Button(400.0f, 200.0f, 100.0f, 50.0f, [this]()
@@ -30,10 +28,10 @@ void AppMining::step(double dt, double time)
     if (result.found && !hasLoggedFind)
     {
         stopMine();
-        std::string foundstring = "Found coin!\n" + result.hash + "\nNonce: " + std::to_string(result.nonce);
-        logToFile(foundstring);
+        foundCoinString = "Found coin!\n" + result.hash + "\nNonce: " + std::to_string(result.nonce);
+        logToFile(foundCoinString);
         std::cout << "\n"
-                  << foundstring << std::endl;
+                  << foundCoinString << std::endl;
         hasLoggedFind = true;
     }
     limiter += (float)dt;
@@ -60,7 +58,11 @@ void AppMining::tick(double dt, double time, double alpha)
     }
     if (isMining)
     {
-        Gfx::drawText(mineInfo.c_str(), 200.0f, 0);
+        Gfx::drawText(mineInfo.c_str(), 0.0f, 150.0f, {255, 0, 0, 255});
+    }
+    if(result.found)
+    {
+        Gfx::drawText(foundCoinString.c_str(), 0, 300.0f);
     }
 }
 

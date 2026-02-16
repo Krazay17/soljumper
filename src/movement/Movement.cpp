@@ -17,7 +17,9 @@ void Movement::jump()
 {
     if (Input::pressed(Actions::JUMP))
     {
-        Velocity.y = -4;
+        Velocity.y = -5;
+        if (onJump)
+            onJump();
     }
 }
 

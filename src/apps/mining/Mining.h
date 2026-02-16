@@ -13,6 +13,7 @@ private:
     BitcoinMiner miner;
     MineResult result;
     double mineStartTime;
+    std::string foundCoinString;
     bool hasLoggedFind = false;
     float limiter = 0.0f;
     std::string mineInfo;

@@ -11,6 +11,7 @@ private:
     std::vector<Button *> buttons;
     Player *player;
     SolWorld *world;
+    int jumpCount;
 
 public:
     AppGame(App *app);

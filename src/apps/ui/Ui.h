@@ -3,6 +3,7 @@
 #include <vector>
 
 class Button;
+
 class AppUi : public AppState
 {
     std::vector<Button *> buttons;

@@ -25,9 +25,9 @@ target_compile_definitions(soljumper PRIVATE CURL_STATICLIB)
 
 # 6. Link Everything (Order is Critical)
 target_link_libraries(soljumper PRIVATE 
-    SDL3::SDL3
     SDL3_ttf::SDL3_ttf
     SDL3_image::SDL3_image
+    SDL3::SDL3
     
     -Wl,-Bstatic 
     -lcurl 
@@ -38,6 +38,7 @@ target_link_libraries(soljumper PRIVATE
     # --- ADD THESE TWO ---
     -lzstd
     -lpsl
+    -lwebp
     # ---------------------
     -lz 
     -lbrotlidec 

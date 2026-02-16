@@ -28,4 +28,5 @@ public:
     void changeAppState(AppStates state);
     void printFps(double frameTime);
     void toggleFps();
+    void exitApp() { running = false; };
 };

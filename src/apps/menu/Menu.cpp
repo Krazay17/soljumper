@@ -14,7 +14,7 @@ AppMenu::AppMenu(App *app)
                                  { std::cout << "BUTTON 1" << std::endl; }, "Test"));
 
     buttons.push_back(new Button(100.0f, 200.0f, 100.0f, 50.0f, [app]()
-                                 { app->changeAppState(AppStates::MINING); }, "BitMiner"));
+                                 { app->changeAppState(AppStates::MINING); }, "Miner"));
 
     buttons.push_back(new Button(100.0f, 300.0f, 100.0f, 50.0f, [app]()
                                  { app->changeAppState(AppStates::GAME); }, "Game"));

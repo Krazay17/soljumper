@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include "math/Vec2.h"
 
 class Movement
@@ -30,6 +31,9 @@ public:
     float ceiling = 0;
     float LWall = 0;
     float RWall = 1280;
+
+    std::function<void()> onJump;
+
     Movement(float posX, float posY, float height = 50.0f, float width = 50.0f);
     void update(double dt);
 };

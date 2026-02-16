@@ -5,12 +5,16 @@
 #include "ui/Button.h"
 #include "player/Player.h"
 #include "core/SolWorld.h"
+#include "movement/Movement.h"
+#include "graphics/Graphics.h"
 
 AppGame::AppGame(App *app)
 {
-    buttons.push_back(new Button(0.0f, 0.0f, 100.0f, 50.0f, [app]()
-                                 { app->changeAppState(AppStates::MENU); }, "Menu"));
     player = new Player();
+    player->movement->onJump = [this]()
+    {
+        jumpCount++;
+    };
     world = new SolWorld();
 }
 
@@ -30,10 +34,13 @@ void AppGame::step(double dt, double time)
 
 void AppGame::tick(double dt, double time, double alpha)
 {
+    Gfx::drawSprite(Gfx::loadTexture("assets/images/RedSky.webp"), 0, 0, 1280, 720);
     world->tick(dt, time, alpha);
     for (auto *b : buttons)
         b->render();
     player->render(dt, alpha);
+    std::string text = "Jumps: " + std::to_string(jumpCount);
+    Gfx::drawText(text.c_str(), 600, 50);
 }
 
 void AppGame::exit()
