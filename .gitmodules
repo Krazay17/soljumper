@@ -1,3 +1,15 @@
 [submodule "external/asio"]
 	path = external/asio
 	url = https://github.com/chriskohlhoff/asio
+[submodule "vendored"]
+	path = vendored
+	url = https://github.com/libsdl-org/SDL
+[submodule "vendored/SDL"]
+	path = vendored/SDL
+	url = https://github.com/libsdl-org/SDL
+[submodule "vendored/SDL_image"]
+	path = vendored/SDL_image
+	url = https://github.com/libsdl-org/SDL_image
+[submodule "vendored/SDL_ttf"]
+	path = vendored/SDL_ttf
+	url = https://github.com/libsdl-org/SDL_ttf
