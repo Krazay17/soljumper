@@ -1,5 +1,4 @@
 #include "Miner.h"
-#include "logger/Logger.h"
 #include "hasher/sha256.h"
 #include <iostream>
 #include <chrono>
