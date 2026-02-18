@@ -2,8 +2,9 @@
 #include "core/Ecs.h"
 #include "input/Input.h"
 
-class PlayerControllerSystem:public EcsSystem
+class LocalControllerSystem : public EcsSystem
 {
-    PlayerControllerSystem(){flags = HAS_PRESTEP;}
+public:
+    LocalControllerSystem() { flags = HAS_PRESTEP; }
     void preStep(SolWorld &world, double dt, double time);
 };

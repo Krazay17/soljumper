@@ -10,8 +10,8 @@ void GfxSystem::tick(SolWorld &world, double dt, double time, double alpha)
     for (int i = 0; i < sprites.size(); ++i)
     {
         int entityId = sprites.getEntityAt(i);
-        Sprite *sprite = sprites.get(entityId);
-        Position *pos = position.get(entityId);
+        Comp::Sprite *sprite = sprites.get(entityId);
+        Comp::Position *pos = position.get(entityId);
 
         Gfx::drawRect(pos->x, pos->y, sprite->width, sprite->height, sprite->color);
     }

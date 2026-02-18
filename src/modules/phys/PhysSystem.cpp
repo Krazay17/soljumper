@@ -15,12 +15,12 @@ void PhysSystem::step(SolWorld &world, double dt, double time)
     for (int i = 0; i < bodies.size(); ++i)
     {
         int entityId = bodies.getEntityAt(i);
-        Body *body = bodies.get(entityId);
+        Comp::Body *body = bodies.get(entityId);
         if (body->type == BodyType::STATIC)
             continue;
 
-        Velocity *vel = velocities.get(entityId);
-        Position *pos = positions.get(entityId);
+        Comp::Velocity *vel = velocities.get(entityId);
+        Comp::Position *pos = positions.get(entityId);
         if (!pos || !vel)
             continue;
 
@@ -38,8 +38,8 @@ void PhysSystem::step(SolWorld &world, double dt, double time)
             int otherId = bodies.getEntityAt(j);
             if (entityId == otherId)
                 continue;
-            Body *otherBody = bodies.get(otherId);
-            Position *otherPos = positions.get(otherId);
+            Comp::Body *otherBody = bodies.get(otherId);
+            Comp::Position *otherPos = positions.get(otherId);
 
             // AABB Check on X
             if (pos->x < otherPos->x + otherBody->width && pos->x + body->width > otherPos->x &&
@@ -71,8 +71,8 @@ void PhysSystem::step(SolWorld &world, double dt, double time)
             int otherId = bodies.getEntityAt(j);
             if (entityId == otherId)
                 continue;
-            Body *otherBody = bodies.get(otherId);
-            Position *otherPos = positions.get(otherId);
+            Comp::Body *otherBody = bodies.get(otherId);
+            Comp::Position *otherPos = positions.get(otherId);
 
             // AABB Check on Y
             if (pos->x < otherPos->x + otherBody->width && pos->x + body->width > otherPos->x &&

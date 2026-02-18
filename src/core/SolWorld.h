@@ -100,14 +100,13 @@ class SolWorld
 public:
     SolWorld();
     
-    ComponentPool<Position> positions;
-    ComponentPool<Body> bodies;
-    ComponentPool<Velocity> velocities;
-    ComponentPool<Sprite> sprites;
-    ComponentPool<InputComp> inputs;
-    ComponentPool<User> users;
-
-    int localUserId;
+    ComponentPool<Comp::Position> positions;
+    ComponentPool<Comp::Body> bodies;
+    ComponentPool<Comp::Velocity> velocities;
+    ComponentPool<Comp::Sprite> sprites;
+    ComponentPool<Comp::Input> inputs;
+    ComponentPool<Comp::LocalUser> localUsers;
+    ComponentPool<Comp::User> users;
 
     void preStep(double dt, double time);
     void step(double dt, double time);

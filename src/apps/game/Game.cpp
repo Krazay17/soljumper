@@ -13,18 +13,18 @@ AppGame::AppGame(App *app)
     world = new SolWorld();
 
     int playerId = world->createEntity();
-    world->localUserId = playerId;
-    world->users.add(playerId);
-    Position &playerPos = world->positions.add(playerId);
+    world->localUsers.add(playerId);
+    world->inputs.add(playerId);
+    Comp::Position &playerPos = world->positions.add(playerId);
     playerPos.x = 400.0f;
     playerPos.y = 400.0f;
     world->sprites.add(playerId).color = {0,0,255,255};
     world->velocities.add(playerId);
-    Body &playerBody = world->bodies.add(playerId);
+    Comp::Body &playerBody = world->bodies.add(playerId);
     playerBody.type = BodyType::DYNAMIC;
 
     int enemyId = world->createEntity();
-    Position &ePos = world->positions.add(enemyId);
+    Comp::Position &ePos = world->positions.add(enemyId);
     ePos.x = 500.0f;
     ePos.y = 550.0f;
     world->sprites.add(enemyId);
@@ -32,14 +32,14 @@ AppGame::AppGame(App *app)
     world->bodies.add(enemyId);
 
     int floorId = world->createEntity();
-    Position &floorPos = world->positions.add(floorId);
+    Comp::Position &floorPos = world->positions.add(floorId);
     floorPos.x = 100.0f;
     floorPos.y = 600.0f;
-    Sprite &floorSprite = world->sprites.add(floorId);
+    Comp::Sprite &floorSprite = world->sprites.add(floorId);
     floorSprite.color = {0, 255, 0, 255};
     floorSprite.width = 1080.0f;
     floorSprite.height = 25.0f;
-    Body &floorBody = world->bodies.add(floorId);
+    Comp::Body &floorBody = world->bodies.add(floorId);
     floorBody.width = 1080.0f;
     floorBody.height = 25.0f;
 

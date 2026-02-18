@@ -1,4 +1,5 @@
 #include "SolWorld.h"
+#include "modules/controller/LocalControllerSystem.h"
 #include "modules/phys/PhysSystem.h"
 #include "modules/gfx/GfxSystem.h"
 #include "modules/movement/MovementSystem.h"
@@ -6,6 +7,7 @@
 
 SolWorld::SolWorld()
 {
+    Systems.push_back(new LocalControllerSystem());
     Systems.push_back(new MovementSystem());
     Systems.push_back(new PhysSystem());
     Systems.push_back(new GfxSystem());
