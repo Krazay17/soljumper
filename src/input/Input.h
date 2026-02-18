@@ -42,4 +42,5 @@ namespace Input
     void handleEvent(const SDL_Event &e);
     void update();
     void preStep();
+    int wishdir();
 };

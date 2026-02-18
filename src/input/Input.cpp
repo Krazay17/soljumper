@@ -15,7 +15,7 @@ namespace Input
     {
         if (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN && e.button.button == SDL_BUTTON_LEFT)
         {
-            buffer |= CLICK; // Save that a click occurred
+            buffer |= CLICK;
         }
     }
 
@@ -32,7 +32,7 @@ namespace Input
             hardwareState |= FWD;
         else
             hardwareState &= ~FWD;
-            
+
         if (keys[SDL_SCANCODE_SPACE])
             hardwareState |= JUMP;
         else
@@ -54,5 +54,15 @@ namespace Input
         lastState = state;
         state = hardwareState | buffer;
         buffer = 0;
+    }
+
+    int wishdir()
+    {
+        int direction = 0;
+        if (state & RIGHT)
+            direction += 1;
+        if (state & LEFT)
+            direction += -1;
+        return direction;
     }
 }

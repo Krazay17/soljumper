@@ -37,6 +37,7 @@ void AppMenu::tick(double dt, double time, double alpha)
     Vec2 target(900, 500);
     Vec2 nextPos = buttons[0]->getPos().lerp_fixed(target, 1, dt);
     buttons[0]->setPos(nextPos);
+    
     for (auto *b : buttons)
         b->render();
 }
