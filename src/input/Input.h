@@ -12,6 +12,7 @@ enum Actions
     LEFT = 1 << 5,
     RIGHT = 1 << 6,
     JUMP = 1 << 7,
+    INVENTORY = 1 << 8,
 };
 
 namespace Input

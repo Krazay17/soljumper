@@ -49,6 +49,7 @@ namespace Comp
     {
         int wishDirX = 0;
         bool jumpRequested = false;
+        bool inventory = false;
     };
 
     struct Velocity
@@ -65,6 +66,7 @@ namespace Comp
         BodyShape shape = BodyShape::BOX;
         BodyType type = BodyType::STATIC;
         uint8_t touching = 0;
+        float mass = 100;
         float groundFriction = 10, airFriction = 0;
         float height = 50.0f, width = 50.0f;
     };
@@ -74,5 +76,11 @@ namespace Comp
         std::string sprite = "Box";
         float width = 50.0f, height = 50.0f;
         SDL_Color color{255, 0, 0, 255};
+    };
+
+    struct Inventory
+    {
+        int speedUp = 1;
+        int speedDown = -1;
     };
 };

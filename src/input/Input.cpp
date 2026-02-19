@@ -17,6 +17,10 @@ namespace Input
         {
             buffer |= CLICK;
         }
+        if (e.type == SDL_EVENT_KEY_DOWN && e.key.key == 99)
+        {
+            buffer |= INVENTORY;
+        }
     }
 
     void update()

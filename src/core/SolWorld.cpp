@@ -3,6 +3,7 @@
 #include "modules/phys/PhysSystem.h"
 #include "modules/gfx/GfxSystem.h"
 #include "modules/movement/MovementSystem.h"
+#include "modules/inventory/InventorySystem.h"
 
 
 SolWorld::SolWorld()
@@ -11,6 +12,7 @@ SolWorld::SolWorld()
     Systems.push_back(new MovementSystem());
     Systems.push_back(new PhysSystem());
     Systems.push_back(new GfxSystem());
+    Systems.push_back(new InventorySystem());
 
     for (auto *s : Systems)
     {

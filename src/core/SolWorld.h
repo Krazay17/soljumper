@@ -107,6 +107,7 @@ public:
     ComponentPool<Comp::Input> inputs;
     ComponentPool<Comp::LocalUser> localUsers;
     ComponentPool<Comp::User> users;
+    ComponentPool<Comp::Inventory> inventories;
 
     void preStep(double dt, double time);
     void step(double dt, double time);

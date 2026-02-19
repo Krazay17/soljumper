@@ -1,4 +1,5 @@
 #include "LocalControllerSystem.h"
+#include <iostream>
 #include "core/SolWorld.h"
 
 void LocalControllerSystem::preStep(SolWorld &world, double dt, double time)
@@ -16,5 +17,10 @@ void LocalControllerSystem::preStep(SolWorld &world, double dt, double time)
 
         input->wishDirX = Input::wishdir();
         input->jumpRequested = Input::pressed(Actions::JUMP);
+        if (Input::pressed(Actions::INVENTORY))
+        {
+            std::cout << "Inventory!" << std::endl;
+            input->inventory = !input->inventory;
+        }
     }
 }

@@ -7,6 +7,7 @@
 #include "core/SolWorld.h"
 #include "movement/Movement.h"
 #include "graphics/Graphics.h"
+#include "core/PreFabs.h"
 
 AppGame::AppGame(App *app)
 {
@@ -18,7 +19,7 @@ AppGame::AppGame(App *app)
     Comp::Position &playerPos = world->positions.add(playerId);
     playerPos.x = 400.0f;
     playerPos.y = 400.0f;
-    world->sprites.add(playerId).color = {0,0,255,255};
+    world->sprites.add(playerId).color = {0, 0, 255, 255};
     world->velocities.add(playerId);
     Comp::Body &playerBody = world->bodies.add(playerId);
     playerBody.type = BodyType::DYNAMIC;
@@ -26,10 +27,17 @@ AppGame::AppGame(App *app)
     int enemyId = world->createEntity();
     Comp::Position &ePos = world->positions.add(enemyId);
     ePos.x = 500.0f;
-    ePos.y = 550.0f;
+    ePos.y = 500.0f;
     world->sprites.add(enemyId);
     world->velocities.add(enemyId);
-    world->bodies.add(enemyId);
+    Comp::Body &enemyBody = world->bodies.add(enemyId);
+    enemyBody.type = BodyType::DYNAMIC;
+
+    for (int i = 0; i < 800; ++i)
+    {
+        const float lat = std::sin(i) * 340 + 640;
+        Factory::makeEnemy(*world, lat, i-200);
+    }
 
     int floorId = world->createEntity();
     Comp::Position &floorPos = world->positions.add(floorId);
