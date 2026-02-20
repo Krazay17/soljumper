@@ -95,7 +95,7 @@ void AppMining::runMine(int x)
     miningThread.detach();
 }
 
-void AppMining::enter(App *app)
+void AppMining::enter()
 {
     genesis.version = 1;
     memset(genesis.prev_hash, 0, 32);

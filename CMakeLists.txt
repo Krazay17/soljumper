@@ -38,7 +38,7 @@ target_compile_definitions(soljumper PRIVATE ASIO_STANDALONE)
 
 # Hide console ONLY on Windows
 if(WIN32)
-    #target_link_options(soljumper PRIVATE -mwindows)
+    target_link_options(soljumper PRIVATE -mwindows)
 endif()
 
 # --- 7. LINKING ---

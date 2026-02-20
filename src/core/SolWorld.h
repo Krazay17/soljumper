@@ -12,8 +12,14 @@ struct Entity
     int signature;
 };
 
+class IComponentPool
+{
+public:
+    virtual void remove(int entityId, bool stable) = 0;
+};
+
 template <typename T>
-class ComponentPool
+class ComponentPool : public IComponentPool
 {
 private:
     // The actual data, packed tight: [Pos1, Pos2, Pos3]
@@ -54,25 +60,30 @@ public:
     }
 
     // 3. The "Swap & Pop" (The magic of Sparse Sets)
-    void remove(int entityId)
+    void remove(int entityId, bool stable) override
     {
         if (entityId >= entityToDense.size() || entityToDense[entityId] == -1)
             return;
 
-        int indexToRemove = entityToDense[entityId];
+        int index = entityToDense[entityId];
         int lastIndex = static_cast<int>(denseData.size()) - 1;
 
-        if (indexToRemove != lastIndex)
+        if (stable)
         {
-            // Swap current with the last one to keep denseData packed
-            T lastComponent = denseData[lastIndex];
-            int lastEntityId = denseToEntity[lastIndex];
-
-            denseData[indexToRemove] = lastComponent;
-            denseToEntity[indexToRemove] = lastEntityId;
-
-            // Update the sparse map for the entity that was moved!
-            entityToDense[lastEntityId] = indexToRemove;
+            // Shift everything after 'index' down by one — preserves order
+            for (int k = index; k < lastIndex; ++k)
+            {
+                denseData[k] = denseData[k + 1];
+                denseToEntity[k] = denseToEntity[k + 1];
+                entityToDense[denseToEntity[k]] = k;
+            }
+        }
+        else if (index != lastIndex)
+        {
+            // Swap & pop — fast but reorders
+            denseData[index] = denseData[lastIndex];
+            denseToEntity[index] = denseToEntity[lastIndex];
+            entityToDense[denseToEntity[index]] = index;
         }
 
         denseData.pop_back();
@@ -90,16 +101,18 @@ class SolWorld
 {
     int nextId = 0;
     std::vector<Entity> entities;
-    std::vector<int> eIdToIndex;
     std::vector<EcsSystem *> Systems;
     std::vector<EcsSystem *> preSystems;
     std::vector<EcsSystem *> stepSystems;
     std::vector<EcsSystem *> postSystems;
     std::vector<EcsSystem *> tickSystems;
+    std::vector<IComponentPool *> allComponents;
 
 public:
     SolWorld();
-    
+
+    std::vector<int> entitiesToRemove;
+
     ComponentPool<Comp::Position> positions;
     ComponentPool<Comp::Body> bodies;
     ComponentPool<Comp::Velocity> velocities;
@@ -108,6 +121,9 @@ public:
     ComponentPool<Comp::LocalUser> localUsers;
     ComponentPool<Comp::User> users;
     ComponentPool<Comp::Inventory> inventories;
+    ComponentPool<Comp::GamePoint> gamePoints;
+
+    Comp::GamePoint singletonGamePoints;
 
     void preStep(double dt, double time);
     void step(double dt, double time);

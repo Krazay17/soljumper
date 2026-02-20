@@ -24,7 +24,7 @@ void MovementSystem::step(SolWorld &world, double dt, double time)
 
         if (input.jumpRequested && grounded)
         {
-            vel->vy = -4;
+            vel->vy = -4.5;
         }
     }
 }

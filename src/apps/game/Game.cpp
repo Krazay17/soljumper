@@ -11,6 +11,10 @@
 
 AppGame::AppGame(App *app)
 {
+}
+
+void AppGame::enter()
+{
     world = new SolWorld();
 
     int playerId = world->createEntity();
@@ -24,43 +28,19 @@ AppGame::AppGame(App *app)
     Comp::Body &playerBody = world->bodies.add(playerId);
     playerBody.type = BodyType::DYNAMIC;
 
-    int enemyId = world->createEntity();
-    Comp::Position &ePos = world->positions.add(enemyId);
-    ePos.x = 500.0f;
-    ePos.y = 500.0f;
-    world->sprites.add(enemyId);
-    world->velocities.add(enemyId);
-    Comp::Body &enemyBody = world->bodies.add(enemyId);
-    enemyBody.type = BodyType::DYNAMIC;
-
-    for (int i = 0; i < 800; ++i)
+    for (int i = 0; i < enemyCount; ++i)
     {
         const float lat = std::sin(i) * 340 + 640;
-        Factory::makeEnemy(*world, lat, i-200);
+        int id = Factory::makeEnemy(*world, lat, i * -1, 10.0f, 10.0f);
+        world->gamePoints.add(id);
     }
 
-    int floorId = world->createEntity();
-    Comp::Position &floorPos = world->positions.add(floorId);
-    floorPos.x = 100.0f;
-    floorPos.y = 600.0f;
-    Comp::Sprite &floorSprite = world->sprites.add(floorId);
-    floorSprite.color = {0, 255, 0, 255};
-    floorSprite.width = 1080.0f;
-    floorSprite.height = 25.0f;
-    Comp::Body &floorBody = world->bodies.add(floorId);
-    floorBody.width = 1080.0f;
-    floorBody.height = 25.0f;
-
-    // player = new Player();
-    if (player)
-        player->movement->onJump = [this]()
-        {
-            jumpCount++;
-        };
-}
-
-void AppGame::enter(App *app)
-{
+    Factory::makeFloor(*world, 100.0f, 600.0f, 15.0f, 1080.0f);
+    Factory::makeFloor(*world, 340.0f, 500.0f, 15.0f, 200.0f);
+    Factory::makeFloor(*world, 740.0f, 500.0f, 15.0f, 200.0f);
+    Factory::makeFloor(*world, 140.0f, 400.0f, 15.0f, 200.0f);
+    Factory::makeFloor(*world, 940.0f, 400.0f, 15.0f, 200.0f);
+    Factory::makeFloor(*world, 540.0f, 300.0f, 15.0f, 200.0f);
 }
 
 void AppGame::step(double dt, double time)
@@ -68,9 +48,6 @@ void AppGame::step(double dt, double time)
     world->preStep(dt, time);
     world->step(dt, time);
     world->postStep(dt, time);
-
-    if (player)
-        player->update(dt);
 
     for (auto *b : buttons)
         b->update();
@@ -82,12 +59,6 @@ void AppGame::tick(double dt, double time, double alpha)
 
     world->tick(dt, time, alpha);
 
-    std::string text = "Jumps: " + std::to_string(jumpCount);
-    Gfx::drawText(text.c_str(), 600, 50);
-
-    if (player)
-        player->render(dt, alpha);
-
     for (auto *b : buttons)
         b->render();
 }
@@ -96,4 +67,6 @@ void AppGame::exit()
 {
     for (auto *b : buttons)
         b->reset();
+
+    delete world;
 }

@@ -22,7 +22,7 @@ public:
     bool isMining = false;
     AppMining(App *app);
     ~AppMining();
-    virtual void enter(App *app) override;
+    virtual void enter() override;
     virtual void step(double dt, double time) override;
     virtual void tick(double dt, double time, double alpha) override;
     virtual void exit() override;

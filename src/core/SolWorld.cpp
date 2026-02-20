@@ -4,7 +4,7 @@
 #include "modules/gfx/GfxSystem.h"
 #include "modules/movement/MovementSystem.h"
 #include "modules/inventory/InventorySystem.h"
-
+#include "modules/points/PointsSystem.h"
 
 SolWorld::SolWorld()
 {
@@ -13,6 +13,17 @@ SolWorld::SolWorld()
     Systems.push_back(new PhysSystem());
     Systems.push_back(new GfxSystem());
     Systems.push_back(new InventorySystem());
+    Systems.push_back(new PointsSystem());
+
+    allComponents.insert(allComponents.end(), {&positions,
+                                               &bodies,
+                                               &velocities,
+                                               &sprites,
+                                               &inputs,
+                                               &localUsers,
+                                               &users,
+                                               &inventories,
+                                               &gamePoints});
 
     for (auto *s : Systems)
     {
@@ -45,11 +56,22 @@ void SolWorld::postStep(double dt, double time)
 
     for (auto *s : postSystems)
         s->postStep(*this, dt, time);
+
+    if (entitiesToRemove.empty())
+        return;
+
+    for (int id : entitiesToRemove)
+    {
+        for (auto &comp : allComponents)
+        {
+            comp->remove(id, true);
+        }
+    }
+    entitiesToRemove.clear();
 }
 
 void SolWorld::tick(double dt, double time, double alpha)
 {
-
     for (auto *s : tickSystems)
         s->tick(*this, dt, time, alpha);
 }
@@ -57,13 +79,6 @@ void SolWorld::tick(double dt, double time, double alpha)
 int SolWorld::createEntity()
 {
     int id = nextId++;
-
-    if (id >= eIdToIndex.size())
-    {
-        eIdToIndex.resize(id + 1, -1);
-    }
-
-    eIdToIndex[id] = entities.size();
     entities.push_back({id, 0});
 
     return id;

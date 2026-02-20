@@ -10,6 +10,7 @@
 
 AppMenu::AppMenu(App *app)
 {
+    this->app = app;
     buttons.push_back(new Button(100.0f, 100.0f, 100.0f, 50.0f, [app]()
                                  { std::cout << "BUTTON 1" << std::endl; }, "Test"));
 
@@ -20,7 +21,7 @@ AppMenu::AppMenu(App *app)
                                  { app->changeAppState(AppStates::GAME); }, "Game"));
 }
 
-void AppMenu::enter(App *app)
+void AppMenu::enter()
 {
     Bitcoin::fetchBitcoinPrice();
     buttons[0]->setPos(Vec2(100.0f, 100.0f));

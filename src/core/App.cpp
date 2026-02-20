@@ -27,7 +27,7 @@ void App::run()
         return;
     }
     currentState = AppReg[AppStates::MENU];
-    currentState->enter(this);
+    currentState->enter();
 
     using clock = std::chrono::steady_clock;
     double accumulator = 0;
@@ -94,7 +94,7 @@ void App::changeAppState(AppStates state)
         return;
     currentState->exit();
     currentState = AppReg[state];
-    currentState->enter(this);
+    currentState->enter();
 }
 
 void App::printFps(double frameTime)
@@ -113,4 +113,9 @@ void App::printFps(double frameTime)
 
 void App::toggleFps()
 {
+}
+
+AppState *App::getState(AppStates state)
+{
+    return AppReg[state];
 }

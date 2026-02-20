@@ -83,4 +83,10 @@ namespace Comp
         int speedUp = 1;
         int speedDown = -1;
     };
+
+    struct GamePoint
+    {
+        int score = 0;
+        bool win = false;
+    };
 };
