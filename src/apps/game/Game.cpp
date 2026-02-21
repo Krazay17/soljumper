@@ -20,27 +20,30 @@ void AppGame::enter()
     int playerId = world->createEntity();
     world->localUsers.add(playerId);
     world->inputs.add(playerId);
-    Comp::Position &playerPos = world->positions.add(playerId);
-    playerPos.x = 400.0f;
-    playerPos.y = 400.0f;
-    world->sprites.add(playerId).color = {0, 0, 255, 255};
-    world->velocities.add(playerId);
-    Comp::Body &playerBody = world->bodies.add(playerId);
-    playerBody.type = BodyType::DYNAMIC;
+    Comp::Physics &playerPhys = world->physics.add(playerId);
+    playerPhys.x = 200.0f;
+    playerPhys.y = 100.0f;
+    playerPhys.w = 40.0f;
+    playerPhys.h = 60.0f;
+    playerPhys.type = BodyType::DYNAMIC;
+    Comp::Sprite &playerSprite = world->sprites.add(playerId);
+    playerSprite.width = 40.0f;
+    playerSprite.height = 60.0f;
+    playerSprite.color = {0, 0, 255, 255};
 
-    for (int i = 0; i < enemyCount; ++i)
+    for (int i = 0; i < 1000; ++i)
     {
         const float lat = std::sin(i) * 340 + 640;
         int id = Factory::makeEnemy(*world, lat, i * -1, 10.0f, 10.0f);
         world->gamePoints.add(id);
     }
 
-    Factory::makeFloor(*world, 100.0f, 600.0f, 15.0f, 1080.0f);
-    Factory::makeFloor(*world, 340.0f, 500.0f, 15.0f, 200.0f);
-    Factory::makeFloor(*world, 740.0f, 500.0f, 15.0f, 200.0f);
-    Factory::makeFloor(*world, 140.0f, 400.0f, 15.0f, 200.0f);
-    Factory::makeFloor(*world, 940.0f, 400.0f, 15.0f, 200.0f);
-    Factory::makeFloor(*world, 540.0f, 300.0f, 15.0f, 200.0f);
+    Factory::makeFloor(*world, 100.0f, 600.0f, 1080.0f, 15.0f);
+    Factory::makeFloor(*world, 340.0f, 500.0f, 200.0f, 15.0f);
+    Factory::makeFloor(*world, 740.0f, 500.0f, 200.0f, 15.0f);
+    Factory::makeFloor(*world, 140.0f, 400.0f, 200.0f, 15.0f);
+    Factory::makeFloor(*world, 940.0f, 400.0f, 200.0f, 15.0f);
+    Factory::makeFloor(*world, 540.0f, 300.0f, 200.0f, 15.0f);
 }
 
 void AppGame::step(double dt, double time)

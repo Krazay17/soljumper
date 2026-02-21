@@ -23,7 +23,9 @@ SolWorld::SolWorld()
                                                &localUsers,
                                                &users,
                                                &inventories,
-                                               &gamePoints});
+                                               &gamePoints,
+                                               &physics});
+
 
     for (auto *s : Systems)
     {

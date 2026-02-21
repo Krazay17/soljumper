@@ -122,6 +122,9 @@ public:
     ComponentPool<Comp::User> users;
     ComponentPool<Comp::Inventory> inventories;
     ComponentPool<Comp::GamePoint> gamePoints;
+    ComponentPool<Comp::Physics> physics;
+
+    Comp::Physics physicsArray[1080];
 
     Comp::GamePoint singletonGamePoints;
 

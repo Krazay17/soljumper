@@ -6,13 +6,11 @@
 Collision getCollision(float aPos, float aWidth, float bPos, float bWidth)
 {
     Collision col;
-
     float centerA = aPos + (aWidth / 2.0f);
     float centerB = bPos + (bWidth / 2.0f);
-    float normal = (centerA < centerB) ? -1.0f : 1.0f;
+    col.normal = (centerA < centerB) ? -1.0f : 1.0f;
     float depth = std::abs(centerA - centerB);
     float combinedDepth = aWidth / 2.0f + bWidth / 2.0f;
-    col.normal = normal;
     col.depth = depth;
     col.overlap = combinedDepth - depth;
     return col;
@@ -25,160 +23,139 @@ float contactPush(float v1, float v2, float m1, float m2)
 
 bool AABB(float L1, float R1, float T1, float B1, float L2, float R2, float T2, float B2)
 {
-    float skin = 0;
-    return L1 < R2 - skin &&
-           R1 > L2 + skin &&
-           T1 < B2 - skin &&
-           B1 > T2 + skin;
+    return L1 < R2 && R1 > L2 && T1 < B2 && B1 > T2;
 }
 
 bool relativeVel(float vel1, float vel2, float pos1, float pos2)
 {
     float vel = vel1 - vel2;
-    return (pos1 < pos2 && vel > 0.001f) || (pos1 > pos2 && vel < 0.001f);
+    return (pos1 < pos2 && vel > 0.001f) || (pos1 > pos2 && vel < -0.001f);
 }
+
 void PhysSystem::step(SolWorld &world, double dt, double time)
 {
-    auto &bodies = world.bodies;
-    auto &positions = world.positions;
-    auto &velocities = world.velocities;
+    auto &physics = world.physics;
+    const int count = static_cast<int>(physics.size());
 
-    // 1. Movement pass — only dynamic bodies
-    for (int i = 0; i < bodies.size(); ++i)
+    // 1. Integration Pass
+    for (int i = 0; i < count; ++i)
     {
-        int entityId = bodies.getEntityAt(i);
-        Comp::Body *body = bodies.get(entityId);
-        if (body->type == BodyType::STATIC)
+        auto &aPhys = physics.getByIndex(i);
+        if (!aPhys.isDynamic())
             continue;
 
-        Comp::Velocity *vel = velocities.get(entityId);
-        Comp::Position *pos = positions.get(entityId);
-        if (!pos || !vel)
-            continue;
+        const float friction = (aPhys.touching & BodyTouching::TOUCHING_DOWN)
+                                   ? aPhys.gFriction
+                                   : aPhys.aFriction;
 
-        const float friction = (body->touching & BodyTouching::TOUCHING_DOWN)
-                                   ? body->groundFriction
-                                   : body->airFriction;
-        vel->vx = MoveUtils::friction(dt, vel->vx, friction);
-        body->touching = 0;
-        vel->vy += 9.81f * dt;
-        pos->x += vel->vx;
-        pos->y += vel->vy;
+        aPhys.vx = MoveUtils::friction(dt, aPhys.vx, friction);
+        aPhys.vy += 9.81f * dt;
+
+        aPhys.touching = 0; // Reset flags for resolution pass
+        aPhys.x += aPhys.vx;
+        aPhys.y += aPhys.vy;
     }
 
-    // 2. Collision pass — all pairs
-    for (int i = 0; i < bodies.size(); ++i)
+    // 2. Collision & Resolution Pass
+    for (int i = 0; i < count; ++i)
     {
-        int idA = bodies.getEntityAt(i);
-        Comp::Body *bodyA = bodies.get(idA);
-        Comp::Position *posA = positions.get(idA);
-        if (!posA || !bodyA)
-            continue;
+        auto &aPhys = physics.getByIndex(i);
 
-        for (int j = i + 1; j < bodies.size(); ++j)
+        for (int j = i + 1; j < count; ++j)
         {
-            int idB = bodies.getEntityAt(j);
-            Comp::Body *bodyB = bodies.get(idB);
-            Comp::Position *posB = positions.get(idB);
-            if (!posB || !bodyB)
-                continue;
+            auto &bPhys = physics.getByIndex(j);
 
             // Skip if both static
-            if (bodyA->type == BodyType::STATIC && bodyB->type == BodyType::STATIC)
+            if (!aPhys.isDynamic() && !bPhys.isDynamic())
                 continue;
 
-            float dx = posB->x - posA->x;
-            float dy = posB->y - posA->y;
-            float range = bodyA->width + bodyB->width;
-            if ((dx * dx + dy * dy) > (range * range))
-                continue;
-
-            if (!AABB(posA->x, posA->x + bodyA->width, posA->y, posA->y + bodyA->height,
-                      posB->x, posB->x + bodyB->width, posB->y, posB->y + bodyB->height))
-                continue;
-
-            Collision colX = getCollision(posA->x, bodyA->width, posB->x, bodyB->width);
-            Collision colY = getCollision(posA->y, bodyA->height, posB->y, bodyB->height);
-
-            bool resolveX = colX.overlap < colY.overlap;
-            float overlap = resolveX ? colX.overlap : colY.overlap;
-            float normal = resolveX ? colX.normal : colY.normal;
-
-            // Resolve positions
-            if (bodyA->type == BodyType::STATIC)
+            if (AABB(aPhys.x, aPhys.x + aPhys.w, aPhys.y, aPhys.y + aPhys.h,
+                     bPhys.x, bPhys.x + bPhys.w, bPhys.y, bPhys.y + bPhys.h))
             {
-                // Only push B
-                if (resolveX)
-                    posB->x -= overlap * normal;
-                else
-                    posB->y -= overlap * normal;
-            }
-            else if (bodyB->type == BodyType::STATIC)
-            {
-                // Only push A
-                if (resolveX)
-                    posA->x += overlap * normal;
-                else
-                    posA->y += overlap * normal;
-            }
-            else
-            {
-                // Both dynamic — split by mass
-                float totalMass = bodyA->mass + bodyB->mass;
-                float ratioA = bodyB->mass / totalMass;
-                float ratioB = bodyA->mass / totalMass;
+                Collision colX = getCollision(aPhys.x, aPhys.w, bPhys.x, bPhys.w);
+                Collision colY = getCollision(aPhys.y, aPhys.h, bPhys.y, bPhys.h);
+
+                // Axis of least penetration
+                bool resolveX = colX.overlap < colY.overlap;
+                float overlap = resolveX ? colX.overlap : colY.overlap;
+                float normal = resolveX ? colX.normal : colY.normal;
+
+                // --- Position Resolution ---
+                float totalMass = aPhys.mass + bPhys.mass;
+                float ratioA = bPhys.isDynamic() ? (aPhys.isDynamic() ? bPhys.mass / totalMass : 0.0f) : 1.0f;
+                float ratioB = aPhys.isDynamic() ? (bPhys.isDynamic() ? aPhys.mass / totalMass : 0.0f) : 1.0f;
+
+                // Static overrides: if A is static, ratioB is 1. If B is static, ratioA is 1.
+                if (!aPhys.isDynamic())
+                {
+                    ratioA = 0.0f;
+                    ratioB = 1.0f;
+                }
+                else if (!bPhys.isDynamic())
+                {
+                    ratioA = 1.0f;
+                    ratioB = 0.0f;
+                }
+
                 if (resolveX)
                 {
-                    posA->x += overlap * normal * ratioA;
-                    posB->x -= overlap * normal * ratioB;
+                    aPhys.x += overlap * normal * ratioA;
+                    bPhys.x -= overlap * normal * ratioB;
                 }
                 else
                 {
-                    posA->y += overlap * normal * ratioA;
-                    posB->y -= overlap * normal * ratioB;
+                    aPhys.y += overlap * normal * ratioA;
+                    bPhys.y -= overlap * normal * ratioB;
                 }
-            }
 
-            // Resolve velocities
-            Comp::Velocity *velA = velocities.get(idA);
-            Comp::Velocity *velB = velocities.get(idB);
-
-            if (resolveX)
-            {
-                if (bodyA->type == BodyType::DYNAMIC)
-                    bodyA->touching |= (normal < 0) ? TOUCHING_RIGHT : TOUCHING_LEFT;
-                if (bodyB->type == BodyType::DYNAMIC)
-                    bodyB->touching |= (normal < 0) ? TOUCHING_LEFT : TOUCHING_RIGHT;
-
-                if (bodyA->type == BodyType::STATIC && velB)
-                    velB->vx = 0;
-                else if (bodyB->type == BodyType::STATIC && velA)
-                    velA->vx = 0;
-                else if (velA && velB && relativeVel(velA->vx, velB->vx, posA->x, posB->x))
+                // --- Velocity & Touching Resolution via relativeVel ---
+                if (resolveX)
                 {
-                    float totalMass = bodyA->mass + bodyB->mass;
-                    float combined = (velA->vx * bodyA->mass + velB->vx * bodyB->mass) / totalMass;
-                    velA->vx = combined;
-                    velB->vx = combined;
+                    // Update touching flags
+                    if (aPhys.isDynamic())
+                        aPhys.touching |= (normal < 0) ? BodyTouching::TOUCHING_RIGHT : BodyTouching::TOUCHING_LEFT;
+                    if (bPhys.isDynamic())
+                        bPhys.touching |= (normal < 0) ? BodyTouching::TOUCHING_LEFT : BodyTouching::TOUCHING_RIGHT;
+
+                    // Resolve Velocity
+                    if (relativeVel(aPhys.vx, bPhys.vx, aPhys.x, bPhys.x))
+                    {
+                        if (!aPhys.isDynamic())
+                            bPhys.vx = 0;
+                        else if (!bPhys.isDynamic())
+                            aPhys.vx = 0;
+                        else
+                        {
+                            float vA = contactPush(aPhys.vx, bPhys.vx, aPhys.mass, bPhys.mass);
+                            float vB = contactPush(bPhys.vx, aPhys.vx, bPhys.mass, aPhys.mass);
+                            aPhys.vx = vA;
+                            bPhys.vx = vB;
+                        }
+                    }
                 }
-            }
-            else
-            {
-                if (bodyA->type == BodyType::DYNAMIC)
-                    bodyA->touching |= (normal < 0) ? TOUCHING_DOWN : TOUCHING_UP;
-                if (bodyB->type == BodyType::DYNAMIC)
-                    bodyB->touching |= (normal < 0) ? TOUCHING_UP : TOUCHING_DOWN;
-
-                if (bodyA->type == BodyType::STATIC && velB)
-                    velB->vy = 0;
-                else if (bodyB->type == BodyType::STATIC && velA)
-                    velA->vy = 0;
-                else if (velA && velB && relativeVel(velA->vy, velB->vy, posA->y, posB->y))
+                else
                 {
-                    float totalMass = bodyA->mass + bodyB->mass;
-                    float combined = (velA->vy * bodyA->mass + velB->vy * bodyB->mass) / totalMass;
-                    velA->vy = combined;
-                    velB->vy = combined;
+                    // Update touching flags
+                    if (aPhys.isDynamic())
+                        aPhys.touching |= (normal < 0) ? BodyTouching::TOUCHING_DOWN : BodyTouching::TOUCHING_UP;
+                    if (bPhys.isDynamic())
+                        bPhys.touching |= (normal < 0) ? BodyTouching::TOUCHING_UP : BodyTouching::TOUCHING_DOWN;
+
+                    // Resolve Velocity
+                    if (relativeVel(aPhys.vy, bPhys.vy, aPhys.y, bPhys.y))
+                    {
+                        if (!aPhys.isDynamic())
+                            bPhys.vy = 0;
+                        else if (!bPhys.isDynamic())
+                            aPhys.vy = 0;
+                        else
+                        {
+                            float vA = contactPush(aPhys.vy, bPhys.vy, aPhys.mass, bPhys.mass);
+                            float vB = contactPush(bPhys.vy, aPhys.vy, bPhys.mass, aPhys.mass);
+                            aPhys.vy = vA;
+                            bPhys.vy = vB;
+                        }
+                    }
                 }
             }
         }

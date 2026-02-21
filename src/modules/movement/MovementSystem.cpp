@@ -6,25 +6,23 @@
 
 void MovementSystem::step(SolWorld &world, double dt, double time)
 {
-    auto &velocities = world.velocities;
     auto &inputs = world.inputs;
-    auto &bodies = world.bodies;
+    auto &physics = world.physics;
 
     for (int i = 0; i < inputs.size(); ++i)
     {
         int entityId = inputs.getEntityAt(i);
         Comp::Input &input = inputs.getByIndex(i);
-        Comp::Velocity *vel = velocities.get(entityId);
-        Comp::Body *body = bodies.get(entityId);
-        if (!vel || !body)
+        Comp::Physics *phys = physics.get(entityId);
+        if (!phys)
             continue;
-        const bool grounded = body->touching & BodyTouching::TOUCHING_DOWN;
-        const float accel = grounded ? vel->groundAccel : vel->airAccel;
-        vel->vx = MoveUtils::accelerate(dt, vel->vx, input.wishDirX, vel->speed, accel);
+        const bool grounded = phys->touching & BodyTouching::TOUCHING_DOWN;
+        const float accel = grounded ? phys->gAccel: phys->aAccel;
+        phys->vx = MoveUtils::accelerate(dt, phys->vx, input.wishDirX, phys->gSpeed, accel);
 
         if (input.jumpRequested && grounded)
         {
-            vel->vy = -4.5;
+            phys->vy = -4.5;
         }
     }
 }

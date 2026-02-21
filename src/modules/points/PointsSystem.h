@@ -11,16 +11,18 @@ public:
     {
         auto &gamePoints = world.singletonGamePoints;
         auto &points = world.gamePoints;
-        auto &poss = world.positions;
-        auto &bodies = world.bodies;
+        auto &physics = world.physics;
+
         if (points.size() < 1)
             gamePoints.win = true;
         for (int i = 0; i < points.size(); ++i)
         {
             int entityId = points.getEntityAt(i);
             auto &point = points.getByIndex(i);
-            Comp::Position *pos = poss.get(entityId);
-            if (pos->y > 780.0f)
+            auto *phys = physics.get(entityId);
+            if (!phys)
+                continue;
+            if (phys->y > 780)
             {
                 gamePoints.score += 1;
                 world.entitiesToRemove.push_back(entityId);
@@ -31,6 +33,10 @@ public:
     inline void tick(SolWorld &world, double dt, double time, double alpha)
     {
         auto &gamePoints = world.singletonGamePoints;
+        if (!gamePoints.win)
+            gamePoints.time += dt;
+        std::string gameTime = std::to_string(gamePoints.time);
+        Gfx::drawText(gameTime.c_str(), 500, 100);
         std::string text = gamePoints.win ? "You Win!" : "Cubes pushed off: " + std::to_string(gamePoints.score);
         Gfx::drawText(text.c_str(), 600, 200);
     }
