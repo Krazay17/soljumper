@@ -3,12 +3,12 @@
 #include "miner/Miner.h"
 #include <vector>
 
-class Button;
+class Tickable;
 class App;
 class AppMining : public AppState
 {
 private:
-    std::vector<Button *> buttons;
+    std::vector<Tickable *> tickables;
     BitcoinHeader genesis;
     BitcoinMiner miner;
     MineResult result;

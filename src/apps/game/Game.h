@@ -2,14 +2,12 @@
 #include "core/AppState.h"
 #include <vector>
 
-class Button;
-class Player;
+class Tickable;
 class SolWorld;
 class AppGame : public AppState
 {
 private:
-    std::vector<Button *> buttons;
-    Player *player;
+    std::vector<Tickable *> tickables;
     SolWorld *world;
     int jumpCount;
 

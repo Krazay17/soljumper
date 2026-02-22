@@ -2,13 +2,10 @@
 #include "core/AppState.h"
 #include <vector>
 
-class Button;
-class Slider;
 class Tickable;
 class AppMenu : public AppState
 {
 private:
-    std::vector<Button *> buttons;
     std::vector<Tickable *> tickables;
     App *app;
 

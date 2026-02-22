@@ -2,15 +2,15 @@
 #include "core/AppState.h"
 #include <vector>
 
-class Button;
+class Tickable;
 
 class AppUi : public AppState
 {
-    std::vector<Button *> buttons;
+    std::vector<Tickable *> tickables;
 
 public:
     AppUi(App *app);
     ~AppUi();
-    void step(double dt, double time);
-    void tick(double dt, double time, double alpha);
+    void step(double dt, double time) override;
+    void tick(double dt, double time, double alpha) override;
 };

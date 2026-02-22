@@ -8,12 +8,12 @@
 
 AppMining::AppMining(App *app) : app(app)
 {
-    buttons.push_back(new Button(200.0f, 200.0f, 100.0f, 50.0f, [this]()
-                                 { runMine(2); }, "Mine 2"));
-    buttons.push_back(new Button(400.0f, 200.0f, 100.0f, 50.0f, [this]()
-                                 { runMine(8); }, "Mine 8"));
-    buttons.push_back(new Button(400.0f, 400.0f, 100.0f, 50.0f, [this]()
-                                 { stopMine(); }, "Stop"));
+    tickables.push_back(new Button(200.0f, 200.0f, 100.0f, 50.0f, [this]()
+                                   { runMine(2); }, "Mine 2"));
+    tickables.push_back(new Button(400.0f, 200.0f, 100.0f, 50.0f, [this]()
+                                   { runMine(8); }, "Mine 8"));
+    tickables.push_back(new Button(400.0f, 400.0f, 100.0f, 50.0f, [this]()
+                                   { stopMine(); }, "Stop"));
 }
 
 AppMining::~AppMining()
@@ -23,6 +23,9 @@ AppMining::~AppMining()
 
 void AppMining::step(double dt, double time)
 {
+    for (auto *t : tickables)
+        t->step(dt, time);
+
     if (result.found && !hasLoggedFind)
     {
         stopMine();
@@ -40,13 +43,13 @@ void AppMining::step(double dt, double time)
         const float hashes = (float)miner.getTotalHashes() / elapsed;
         mineInfo = "Hashrate: " + std::to_string(hashes) + " KH/s";
     }
-
-    for (auto *b : buttons)
-        b->update(dt);
 }
 
 void AppMining::tick(double dt, double time, double alpha)
 {
+    for (auto *t : tickables)
+        t->tick(dt, time, alpha);
+
     double price = Bitcoin::currentPrice.load();
     if (price <= 0.0)
         Gfx::drawText("Fetching BTC Price...", 0.0f, 100.0f);
@@ -59,19 +62,14 @@ void AppMining::tick(double dt, double time, double alpha)
     {
         Gfx::drawText(mineInfo.c_str(), 0.0f, 150.0f, {255, 0, 0, 255});
     }
-    if(result.found)
+    if (result.found)
     {
         Gfx::drawText(foundCoinString.c_str(), 0, 300.0f);
     }
-
-    for (auto *b : buttons)
-        b->render();
 }
 
 void AppMining::exit()
 {
-    for (auto *b : buttons)
-        b->reset();
 }
 
 void AppMining::stopMine()

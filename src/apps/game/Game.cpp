@@ -48,28 +48,25 @@ void AppGame::enter()
 
 void AppGame::step(double dt, double time)
 {
+    for (auto *t : tickables)
+        t->step(dt, time);
+
     world->preStep(dt, time);
     world->step(dt, time);
     world->postStep(dt, time);
-
-    for (auto *b : buttons)
-        b->update();
 }
 
 void AppGame::tick(double dt, double time, double alpha)
 {
     Gfx::drawSprite(Gfx::loadTexture("assets/images/RedSky.webp"), 0, 0, 1280, 720);
 
-    world->tick(dt, time, alpha);
+    for (auto *t : tickables)
+        t->tick(dt, time, alpha);
 
-    for (auto *b : buttons)
-        b->render();
+    world->tick(dt, time, alpha);
 }
 
 void AppGame::exit()
 {
-    for (auto *b : buttons)
-        b->reset();
-
     delete world;
 }

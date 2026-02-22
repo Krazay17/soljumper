@@ -5,24 +5,24 @@
 
 AppUi::AppUi(App *app)
 {
-    buttons.push_back(
+    tickables.push_back(
         new Button(0.0f, 0.0f, 100.0f, 50.0f, [app]()
                    { app->changeAppState(AppStates::MENU); }, "Menu"));
-    buttons.push_back(
+    tickables.push_back(
         new Button(1180.0f, 0.0f, 100.0f, 50.0f, [app]()
                    { app->exitApp(); }, "Exit"));
 }
 
 AppUi::~AppUi()
 {
-    for (auto *b : buttons)
-        delete b;
+    for (auto *t : tickables)
+        delete t;
 }
 
 void AppUi::step(double dt, double time)
 {
-    for (auto *b : buttons)
-        b->update();
+    for (auto *t : tickables)
+        t->step(dt, time);
 }
 
 void AppUi::tick(double dt, double time, double alpha)
@@ -33,6 +33,6 @@ void AppUi::tick(double dt, double time, double alpha)
     // Draw the Title
     Gfx::drawText("Sol Jumper - Alpha", 200, 0, {200, 200, 200, 255});
 
-    for (auto *b : buttons)
-        b->render();
+    for (auto *t : tickables)
+        t->tick(dt, time, alpha);
 }

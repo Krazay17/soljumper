@@ -1,20 +1,21 @@
 #pragma once
-#include "UiBase.h"
+#include "UiElement.h"
 #include "graphics/Graphics.h"
 
-class Slider : public Element
+class Slider : public UiElement
 {
 
 public:
     float value = 0.5f;
     std::function<void(float)> onSlide;
 
-    Slider(float x, float y, float w, float h, std::function<void(float)> callback)
-        : onSlide(callback), Element(x, y, w, h, "Slider") {}
+    Slider(float x, float y, float w, float h, std::function<void(float)> callback, const char *t = "Slider")
+        : UiElement(x, y, w, h, NULL, t), onSlide(callback) {}
     void step(double dt, double time) override
     {
+        UiElement::step(dt, time);
+        
         const float oldValue = value;
-        Element::step(dt, time);
         if (isPressed)
             value = (Input::mouseX - rect.x) / rect.w;
         if (value < 0.0f)
