@@ -6,11 +6,11 @@
 AppUi::AppUi(App *app)
 {
     tickables.push_back(
-        new Button(0.0f, 0.0f, 100.0f, 50.0f, [app]()
-                   { app->changeAppState(AppStates::MENU); }, "Menu"));
+        new Button({0.0f, 0.0f, 100.0f, 50.0f}, "Menu", [app]()
+                   { app->changeAppState(AppStates::MENU); }));
     tickables.push_back(
-        new Button(1180.0f, 0.0f, 100.0f, 50.0f, [app]()
-                   { app->exitApp(); }, "Exit"));
+        new Button({1180.0f, 0.0f, 100.0f, 50.0f}, "Exit", [app]()
+                   { app->exitApp(); }));
 }
 
 AppUi::~AppUi()

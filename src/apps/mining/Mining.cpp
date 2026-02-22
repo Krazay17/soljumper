@@ -8,12 +8,12 @@
 
 AppMining::AppMining(App *app) : app(app)
 {
-    tickables.push_back(new Button(200.0f, 200.0f, 100.0f, 50.0f, [this]()
-                                   { runMine(2); }, "Mine 2"));
-    tickables.push_back(new Button(400.0f, 200.0f, 100.0f, 50.0f, [this]()
-                                   { runMine(8); }, "Mine 8"));
-    tickables.push_back(new Button(400.0f, 400.0f, 100.0f, 50.0f, [this]()
-                                   { stopMine(); }, "Stop"));
+    tickables.push_back(new Button({200.0f, 200.0f, 100.0f, 50.0f}, "Mine 2", [this]()
+                                   { runMine(2); }));
+    tickables.push_back(new Button({400.0f, 200.0f, 100.0f, 50.0f}, "Mine 8", [this]()
+                                   { runMine(8); }));
+    tickables.push_back(new Button({400.0f, 400.0f, 100.0f, 50.0f}, "Stop", [this]()
+                                   { stopMine(); }));
 }
 
 AppMining::~AppMining()

@@ -99,8 +99,6 @@ void App::changeAppState(AppStates state)
 
 void App::printFps(double frameTime)
 {
-    // Add 'float smoothedFps' as a member variable to your App class
-    // Then inside run():
     const float currentFps = (frameTime > 0.0f) ? 1.0f / (float)frameTime : 0.0f;
     if (std::isfinite(currentFps))
     {

@@ -7,8 +7,9 @@
 class Button : public UiElement
 {
 public:
-    Button(float x, float y, float w, float h, std::function<void()> callback, const char *t = "Button")
-        : UiElement(x, y, w, h, callback, t) {}
+    Button(SDL_FRect r, std::string t = "Button", std::function<void()> callback = nullptr)
+        : UiElement(r, t, callback) {}
+
     void step(double dt, double time) override
     {
         UiElement::step(dt, time);
@@ -28,9 +29,8 @@ public:
         }
         tc = isHovered ? textHoverColor : textColor;
         Gfx::drawRect(rect.x, rect.y, rect.w, rect.h, bc);
-        std::string tString = text;
-        float textX = (rect.x + rect.w / 2) - tString.length() * 8;
+        float textX = (rect.x + rect.w / 2) - text.length() * 8;
         float textY = rect.y + rect.h / 5;
-        Gfx::drawText(text, textX, textY, tc);
+        Gfx::drawText(text.c_str(), textX, textY, tc);
     }
 };

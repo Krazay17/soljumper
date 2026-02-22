@@ -14,7 +14,7 @@ protected:
     bool isPressed = false;
     float clickProgress = 0;
     float progressSpeed = 1;
-    const char *text;
+    std::string text;
 
     std::function<void()> onClick;
 
@@ -27,8 +27,19 @@ protected:
     SDL_Color textHoverColor{255, 255, 255, 255};
 
 public:
-    UiElement(float x, float y, float w, float h, std::function<void()> callback = NULL, const char *t = "Button")
-        : rect({x, y, w, h}), onClick(callback), text(t) {}
+    UiElement(SDL_FRect r, std::string t = "Button", std::function<void()> callback = nullptr)
+        : rect(r), onClick(callback), text(t) {}
+
+    void setText(const std::string &t)
+    {
+        text = t;
+    }
+
+    void setOnClick(std::function<void()> e)
+    {
+        onClick = e;
+    }
+
     virtual void step(double dt, double time) override
     {
         isHovered = (Input::mouseX >= rect.x && Input::mouseX <= rect.x + rect.w &&
@@ -44,18 +55,21 @@ public:
         if (onClick && isHovered && Input::pressed(CLICK))
             onClick();
     }
+
     virtual void tick(double dt, double time, double alpha) override = 0;
 
     Vec2 getPos()
     {
         return Vec2(rect.x, rect.y);
     }
+
     Vec2 setPos(const Vec2 &vec)
     {
         rect.x = vec.x;
         rect.y = vec.y;
         return Vec2(vec.x, vec.y);
     }
+
     virtual void reset() override
     {
         clickProgress = 0;

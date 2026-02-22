@@ -13,18 +13,31 @@
 AppMenu::AppMenu(App *app)
 {
     this->app = app;
-    tickables.push_back(new Button(100.0f, 100.0f, 100.0f, 50.0f, [app]()
-                                   { std::cout << "BUTTON 1" << std::endl; }, "Test"));
 
-    tickables.push_back(new Button(100.0f, 200.0f, 100.0f, 50.0f, [app]()
-                                   { app->changeAppState(AppStates::MINING); }, "Miner"));
+    auto *testButton = new Button({100.0f, 100.0f, 100.0f, 50.0f}, "Test");
+    testButton->setOnClick([app]()
+                           { std::cout << "BUTTON 1" << std::endl; });
+    tickables.push_back(testButton);
 
-    tickables.push_back(new Button(100.0f, 300.0f, 100.0f, 50.0f, [app]()
-                                   { app->changeAppState(AppStates::GAME); }, "Game"));
+    auto *mineButton = new Button({100.0f, 200.0f, 100.0f, 50.0f}, "Miner");
+    mineButton->setOnClick([app]()
+                           { app->changeAppState(AppStates::MINING); });
+    tickables.push_back(mineButton);
 
-    tickables.push_back(new Slider(200.0f, 400.0f, 200.0f, 50.0f, [app](float value)
-                                   { AppGame* game = static_cast<AppGame*>(app->getState(AppStates::GAME));
-                                    game->enemyCount = value * 1000; }));
+    auto *gameButton = new Button({100.0f, 300.0f, 100.0f, 50.0f}, "Game");
+    gameButton->setOnClick([app]()
+                           { app->changeAppState(AppStates::GAME); });
+    tickables.push_back(gameButton);
+
+    auto *enemySlider = new Slider({200.0f, 400.0f, 200.0f, 50.0f}, "Enemies");
+    enemySlider->setOnSlide(
+        [app](Slider *self, float value)
+        {
+            const int e = static_cast<int>(value * 1000);
+            static_cast<AppGame *>(app->getState(AppStates::GAME))->enemyCount = e;
+            self->setText(std::to_string(e));
+        });
+    tickables.push_back(enemySlider);
 }
 
 void AppMenu::enter()

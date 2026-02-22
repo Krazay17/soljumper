@@ -12,7 +12,7 @@ private:
     int jumpCount;
 
 public:
-    int enemyCount = 200;
+    int enemyCount = 500;
     AppGame(App *app);
     virtual void enter() override;
     virtual void step(double dt, double time) override;
