@@ -31,7 +31,7 @@ void AppGame::enter()
     playerSprite.height = 60.0f;
     playerSprite.color = {0, 0, 255, 255};
 
-    for (int i = 0; i < 1000; ++i)
+    for (int i = 0; i < enemyCount; ++i)
     {
         const float lat = std::sin(i) * 340 + 640;
         int id = Factory::makeEnemy(*world, lat, i * -1, 10.0f, 10.0f);

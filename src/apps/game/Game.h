@@ -12,9 +12,9 @@ private:
     Player *player;
     SolWorld *world;
     int jumpCount;
-    int enemyCount = 200;
 
 public:
+    int enemyCount = 200;
     AppGame(App *app);
     virtual void enter() override;
     virtual void step(double dt, double time) override;

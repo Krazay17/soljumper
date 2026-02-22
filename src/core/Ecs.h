@@ -23,3 +23,10 @@ public:
     virtual void postStep(SolWorld &world, double dt, double time) {};
     virtual void tick(SolWorld &world, double dt, double time, double alpha) {};
 };
+
+class Tickable
+{
+    public:
+    virtual void step(double dt, double time) = 0;
+    virtual void tick(double dt, double time, double alpha) = 0;
+};
